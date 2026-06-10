@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>IELS Assessment | استبیان الإسعافات الطارئة المتكاملة</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap');
+  :root {
+    --navy:#0f2744;--teal:#0e7c7b;--teal-light:#e6f4f4;
+    --gold:#c8941a;--gold-light:#fdf6e3;
+    --gray-50:#f8f9fa;--gray-100:#f0f2f5;--gray-200:#e2e6ea;
+    --gray-400:#9aa5b4;--gray-600:#4a5568;--gray-800:#1a202c;
+    --green:#1a7a4a;--green-light:#e8f5ee;
+    --red:#c0392b;--red-light:#fdf0ee;
+    --radius:10px;--shadow:0 2px 12px rgba(15,39,68,.10);--shadow-md:0 4px 24px rgba(15,39,68,.14);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Inter','Noto Sans Arabic',sans-serif;background:var(--gray-100);color:var(--gray-800);min-height:100vh;}
+
+  /* HEADER */
+  .header{background:var(--navy);color:white;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.25);}
+  .header-inner{max-width:920px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:14px;}
+  .header-logo{width:42px;height:42px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+  .header-text{flex:1;}
+  .header-title{font-size:15px;font-weight:700;}
+  .header-sub{font-size:12px;color:rgba(255,255,255,.6);margin-top:1px;font-family:'Noto Sans Arabic',sans-serif;}
+  .header-badge{background:var(--gold);color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px;white-space:nowrap;}
+  .progress-bar-wrap{background:rgba(255,255,255,.12);height:4px;}
+  .progress-bar-fill{height:4px;background:var(--gold);transition:width .4s ease;width:0%;}
+
+  .main{max-width:920px;margin:0 auto;padding:24px 16px 60px;}
+
+  /* COVER */
+  .cover{background:white;border-radius:var(--radius);box-shadow:var(--shadow-md);overflow:hidden;}
+  .cover-banner{background:linear-gradient(135deg,var(--navy) 0%,#1a3a6e 100%);padding:36px 32px;text-align:center;color:white;}
+  .cover-badge{display:inline-block;background:var(--gold);color:white;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:4px 14px;border-radius:20px;margin-bottom:14px;}
+  .cover-title-en{font-size:26px;font-weight:700;}
+  .cover-title-ar{font-family:'Noto Sans Arabic',sans-serif;font-size:18px;margin-top:6px;color:rgba(255,255,255,.75);}
+  .cover-divider{width:48px;height:3px;background:var(--gold);margin:18px auto;border-radius:2px;}
+  .cover-body{padding:28px 32px;}
+
+  .test-type-row{display:flex;gap:10px;margin-bottom:24px;}
+  .test-type-btn{flex:1;padding:14px;border:2px solid var(--gray-200);border-radius:var(--radius);background:white;cursor:pointer;text-align:center;transition:all .2s;}
+  .test-type-btn.active-pre{border-color:var(--teal);background:var(--teal-light);}
+  .test-type-btn.active-post{border-color:var(--gold);background:var(--gold-light);}
+  .test-type-btn.disabled{opacity:.4;cursor:not-allowed;filter:grayscale(1);}
+  .coming-soon-tag{display:inline-block;background:var(--gray-200);color:var(--gray-400);font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:.07em;margin-top:4px;}
+  .test-type-btn .tb-icon{font-size:22px;display:block;margin-bottom:4px;}
+  .test-type-btn .tb-label{font-size:14px;font-weight:700;color:var(--navy);}
+  .test-type-btn .tb-ar{font-family:'Noto Sans Arabic',sans-serif;font-size:12px;color:var(--gray-400);}
+
+  .cover-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px;}
+  .cover-field label{font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:5px;}
+  .cover-field input,.cover-field select{width:100%;padding:10px 12px;border:1.5px solid var(--gray-200);border-radius:7px;font-size:14px;font-family:'Inter',sans-serif;color:var(--gray-800);background:var(--gray-50);transition:border-color .2s;outline:none;}
+  .cover-field input:focus,.cover-field select:focus{border-color:var(--teal);background:white;}
+
+  .instructions-box{background:var(--teal-light);border-left:4px solid var(--teal);border-radius:7px;padding:16px 18px;margin-bottom:24px;}
+  .instructions-box .inst-title{font-weight:700;font-size:13px;color:var(--teal);margin-bottom:8px;}
+  .instructions-box p{font-size:13px;color:var(--gray-600);line-height:1.55;}
+  .instructions-box p+p{margin-top:8px;font-family:'Noto Sans Arabic',sans-serif;direction:rtl;}
+
+  .parts-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:28px;}
+  .part-chip{border:1.5px solid var(--gray-200);border-radius:8px;padding:12px;text-align:center;}
+  .part-chip .chip-letter{font-size:20px;font-weight:700;color:var(--navy);display:block;}
+  .part-chip .chip-name{font-size:11px;color:var(--gray-400);font-weight:600;margin-top:2px;}
+  .part-chip .chip-count{font-size:12px;color:var(--teal);font-weight:600;margin-top:4px;}
+
+  .btn-start{width:100%;padding:15px;background:var(--teal);color:white;border:none;border-radius:var(--radius);font-size:15px;font-weight:700;cursor:pointer;transition:background .2s;}
+  .btn-start:hover{background:#0a5f5e;}
+
+  /* SECTION */
+  .section-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+  .section-icon{width:40px;height:40px;border-radius:8px;background:var(--navy);display:flex;align-items:center;justify-content:center;color:white;font-size:16px;font-weight:700;flex-shrink:0;}
+  .section-title-en{font-size:17px;font-weight:700;color:var(--navy);}
+  .section-title-ar{font-family:'Noto Sans Arabic',sans-serif;font-size:13px;color:var(--gray-400);}
+  .section-instruction{background:var(--gold-light);border-left:4px solid var(--gold);border-radius:7px;padding:12px 16px;margin-bottom:22px;font-size:13px;color:var(--gray-600);}
+  .section-instruction .ar{font-family:'Noto Sans Arabic',sans-serif;direction:rtl;display:block;margin-top:6px;}
+
+  .domain-badge{display:inline-flex;align-items:center;gap:7px;background:var(--navy);color:white;font-size:11px;font-weight:700;padding:5px 13px;border-radius:20px;letter-spacing:.07em;margin:20px 0 14px;}
+  .domain-badge .ar{font-family:'Noto Sans Arabic',sans-serif;font-weight:400;font-size:11px;}
+
+  /* QUESTION CARD */
+  .q-card{background:white;border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 22px;margin-bottom:14px;border:1.5px solid transparent;transition:border-color .2s;}
+  .q-card.answered{border-color:var(--teal);}
+  .q-number{font-size:11px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;}
+  .q-text-en{font-size:14px;font-weight:600;color:var(--gray-800);line-height:1.5;margin-bottom:6px;}
+  .q-text-ar{font-family:'Noto Sans Arabic',sans-serif;font-size:13px;color:var(--gray-600);line-height:1.6;direction:rtl;margin-bottom:14px;}
+
+  .options-list{display:flex;flex-direction:column;gap:8px;}
+  .option-label{display:flex;align-items:flex-start;gap:12px;padding:11px 14px;border:1.5px solid var(--gray-200);border-radius:8px;cursor:pointer;transition:border-color .2s,background .15s;}
+  .option-label:hover{border-color:var(--teal);background:var(--teal-light);}
+  .option-label input[type="radio"]{display:none;}
+  .option-label.selected{border-color:var(--teal);background:var(--teal-light);}
+  .option-label.selected .opt-letter{background:var(--teal);color:white;}
+  /* Results overlays */
+  .option-label.correct-ans{border-color:var(--green)!important;background:var(--green-light)!important;}
+  .option-label.correct-ans .opt-letter{background:var(--green)!important;color:white!important;}
+  .option-label.wrong-ans{border-color:var(--red)!important;background:var(--red-light)!important;}
+  .option-label.wrong-ans .opt-letter{background:var(--red)!important;color:white!important;}
+  .opt-letter{width:26px;height:26px;border-radius:50%;background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;transition:background .2s,color .2s;}
+  .opt-texts{flex:1;}
+  .opt-en{font-size:13px;color:var(--gray-800);font-weight:500;}
+  .opt-ar{font-family:'Noto Sans Arabic',sans-serif;font-size:12px;color:var(--gray-400);direction:rtl;margin-top:2px;}
+
+  /* LIKERT */
+  .likert-wrap{margin-top:10px;}
+  .likert-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--gray-400);margin-bottom:8px;}
+  .likert-scale{display:flex;gap:8px;}
+  .likert-btn{flex:1;padding:10px 4px;border:1.5px solid var(--gray-200);border-radius:8px;background:white;cursor:pointer;text-align:center;font-size:14px;font-weight:700;color:var(--gray-600);transition:all .15s;}
+  .likert-btn:hover{border-color:var(--teal);color:var(--teal);}
+  .likert-btn.selected{background:var(--teal);border-color:var(--teal);color:white;}
+
+  /* CHECKBOX */
+  .checkbox-list{display:flex;flex-direction:column;gap:8px;}
+  .check-label{display:flex;align-items:flex-start;gap:12px;padding:11px 14px;border:1.5px solid var(--gray-200);border-radius:8px;cursor:pointer;transition:all .15s;}
+  .check-label:hover{border-color:var(--gold);background:var(--gold-light);}
+  .check-label.selected{border-color:var(--gold);background:var(--gold-light);}
+  .check-box{width:22px;height:22px;border-radius:5px;border:2px solid var(--gray-200);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;color:transparent;transition:all .15s;}
+  .check-label.selected .check-box{background:var(--gold);border-color:var(--gold);color:white;}
+
+  .q-textarea{width:100%;padding:12px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;color:var(--gray-800);resize:vertical;min-height:90px;outline:none;transition:border-color .2s;}
+  .q-textarea:focus{border-color:var(--teal);}
+
+  /* NAV */
+  .nav-row{display:flex;gap:12px;margin-top:28px;align-items:center;}
+  .btn-back{padding:12px 22px;background:white;border:1.5px solid var(--gray-200);border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer;color:var(--gray-600);transition:border-color .2s;}
+  .btn-back:hover{border-color:var(--navy);color:var(--navy);}
+  .btn-next{flex:1;padding:13px;background:var(--navy);color:white;border:none;border-radius:var(--radius);font-size:14px;font-weight:700;cursor:pointer;transition:background .2s;}
+  .btn-next:hover{background:#1a3a6e;}
+  .progress-text{font-size:12px;color:var(--gray-400);text-align:center;flex-shrink:0;min-width:80px;}
+
+  /* SUBMIT OVERLAY */
+  .submit-overlay{position:fixed;inset:0;background:rgba(15,39,68,.7);z-index:999;display:flex;align-items:center;justify-content:center;}
+  .submit-card{background:white;border-radius:16px;padding:36px 32px;text-align:center;max-width:380px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.3);}
+  .submit-spinner{width:48px;height:48px;border:4px solid var(--gray-200);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .submit-title{font-size:18px;font-weight:700;color:var(--navy);margin-bottom:8px;}
+  .submit-msg{font-size:13px;color:var(--gray-600);line-height:1.5;}
+
+  /* RESULTS PAGE */
+  .results-wrap{background:white;border-radius:var(--radius);box-shadow:var(--shadow-md);overflow:hidden;}
+  .results-banner{padding:28px 28px 22px;color:white;text-align:center;}
+  .results-banner.pre{background:linear-gradient(135deg,var(--navy) 0%,#1a3a6e 100%);}
+  .results-banner.post{background:linear-gradient(135deg,#0a5f5e 0%,var(--teal) 100%);}
+  .results-banner h2{font-size:22px;font-weight:700;}
+  .results-banner p{font-size:13px;margin-top:5px;opacity:.8;}
+
+  /* BIG SCORE */
+  .score-hero{display:flex;align-items:center;justify-content:center;gap:28px;padding:28px 28px 0;}
+  .score-circle{width:120px;height:120px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;}
+  .score-circle.excellent{background:linear-gradient(135deg,var(--green),#0f5c35);}
+  .score-circle.good{background:linear-gradient(135deg,var(--teal),#0a5f5e);}
+  .score-circle.fair{background:linear-gradient(135deg,var(--gold),#9a6e12);}
+  .score-circle.poor{background:linear-gradient(135deg,var(--red),#922b21);}
+  .score-circle .sc-val{font-size:32px;font-weight:700;color:white;line-height:1;}
+  .score-circle .sc-total{font-size:13px;color:rgba(255,255,255,.75);}
+  .score-circle .sc-pct{font-size:14px;font-weight:700;color:rgba(255,255,255,.9);margin-top:2px;}
+  .score-meta{flex:1;}
+  .score-meta h3{font-size:17px;font-weight:700;color:var(--navy);margin-bottom:10px;}
+  .score-grade{display:inline-block;padding:5px 14px;border-radius:20px;font-size:13px;font-weight:700;margin-bottom:10px;}
+  .grade-excellent{background:var(--green-light);color:var(--green);}
+  .grade-good{background:var(--teal-light);color:var(--teal);}
+  .grade-fair{background:var(--gold-light);color:var(--gold);}
+  .grade-poor{background:var(--red-light);color:var(--red);}
+  .score-meta p{font-size:13px;color:var(--gray-600);line-height:1.5;}
+
+  /* DOMAIN TABLE */
+  .results-body{padding:24px 28px;}
+  .domain-table{width:100%;border-collapse:collapse;margin-bottom:22px;font-size:13px;}
+  .domain-table th{background:var(--navy);color:white;padding:10px 14px;text-align:left;font-weight:600;}
+  .domain-table td{padding:10px 14px;border-bottom:1px solid var(--gray-200);}
+  .domain-table tr:last-child td{border-bottom:none;}
+  .domain-table tr:nth-child(even) td{background:var(--gray-50);}
+  .bar-wrap{background:var(--gray-200);border-radius:4px;height:8px;width:100%;min-width:80px;}
+  .bar-fill{height:8px;border-radius:4px;transition:width .6s ease;}
+  .bar-green{background:var(--green);}
+  .bar-teal{background:var(--teal);}
+  .bar-gold{background:var(--gold);}
+  .bar-red{background:var(--red);}
+
+  /* REVIEWED ANSWERS */
+  .review-section{margin-top:24px;}
+  .review-toggle{width:100%;padding:12px 16px;background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;text-align:left;color:var(--navy);display:flex;justify-content:space-between;align-items:center;}
+  .review-toggle:hover{border-color:var(--navy);}
+  .review-content{display:none;margin-top:10px;}
+  .review-content.open{display:block;}
+
+  /* RESULT CARD indicators */
+  .result-tag{font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:8px;}
+  .tag-correct{background:var(--green-light);color:var(--green);}
+  .tag-wrong{background:var(--red-light);color:var(--red);}
+  .tag-skipped{background:var(--gray-100);color:var(--gray-400);}
+
+  /* SYNC */
+  .sync-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;margin-bottom:16px;}
+  .sync-badge.ok{background:var(--green-light);color:var(--green);}
+  .sync-badge.fail{background:var(--red-light);color:var(--red);}
+
+  .participant-info{background:var(--gray-50);border-radius:8px;padding:14px;margin-bottom:20px;font-size:13px;color:var(--gray-600);border:1.5px solid var(--gray-200);line-height:1.8;}
+  .btn-print{width:100%;padding:14px;background:var(--gold);color:white;border:none;border-radius:var(--radius);font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;transition:background .2s;}
+  .btn-print:hover{background:#b8841a;}
+  .btn-restart{width:100%;padding:12px;background:white;border:1.5px solid var(--gray-200);border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer;color:var(--gray-600);transition:border-color .2s;}
+  .btn-restart:hover{border-color:var(--navy);color:var(--navy);}
+  .retry-btn{width:100%;padding:12px;background:var(--red);color:white;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;margin-bottom:10px;}
+
+  .hidden{display:none!important;}
+
+  @media print{
+    .header,.nav-row,.btn-print,.btn-restart,.retry-btn,.review-toggle{display:none!important;}
+    .review-content{display:block!important;}
+    body{background:white;}
+    .main{padding:0;max-width:100%;}
+    .q-card,.results-wrap{box-shadow:none;border:1px solid #ddd;break-inside:avoid;}
+  }
+  @media(max-width:600px){
+    .cover-info-grid{grid-template-columns:1fr;}
+    .test-type-row{flex-direction:column;}
+    .score-hero{flex-direction:column;text-align:center;}
+    .cover-body{padding:20px 16px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-logo">🏥</div>
+    <div class="header-text">
+      <div class="header-title">IELS Participant Assessment</div>
+      <div class="header-sub">استبیان المشاركین — دورة الإسعافات الطارئة المتكاملة</div>
+    </div>
+    <div class="header-badge" id="headerBadge">PRE-TEST</div>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+</div>
+
+<div class="main">
+
+<!-- ===== COVER ===== -->
+<div id="pageCover" class="cover">
+  <div class="cover-banner">
+    <div class="cover-badge" id="coverBadge">PRE-COURSE · قبل الدورة</div>
+    <div class="cover-title-en">IELS Participant Assessment</div>
+    <div class="cover-title-ar">استبیان المشاركین — دورة الإسعافات الطارئة المتكاملة</div>
+    <div class="cover-divider"></div>
+    <div style="font-size:13px;color:rgba(255,255,255,.7);">Instruments A (Knowledge) + B (Competence) + C (MCI Preparedness)<br>
+    <span style="font-family:'Noto Sans Arabic',sans-serif;">الأداة أ (المعرفة) + ب (الكفاءة) + ج (الاستعداد للحوادث الجسیمة)</span></div>
+  </div>
+  <div class="cover-body">
+    <div style="margin-bottom:8px;font-size:12px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.08em;">Test Type / نوع الاختبار</div>
+    <div class="test-type-row">
+      <button class="test-type-btn active-pre" id="btnPre" onclick="setTestType('PRE')">
+        <span class="tb-icon">📋</span><div class="tb-label">Pre-Course Test</div><div class="tb-ar">اختبار ما قبل الدورة</div>
+      </button>
+      <button class="test-type-btn disabled" id="btnPost" disabled title="Available after the course">
+        <span class="tb-icon">🎓</span><div class="tb-label">Post-Course Test</div><div class="tb-ar">اختبار ما بعد الدورة</div>
+        <div class="coming-soon-tag">🔒 AVAILABLE AFTER COURSE</div>
+      </button>
+    </div>
+    <div class="cover-info-grid">
+      <div class="cover-field"><label>Participant Code / رمز المشارك</label><input type="text" id="participantCode" placeholder="e.g. JR1985" maxlength="20"/></div>
+      <div class="cover-field"><label>Date / التاریخ</label><input type="date" id="assessmentDate"/></div>
+      <div class="cover-field" style="grid-column:1/-1"><label>Professional Category / الفئة المھنیة</label>
+        <select id="profCategory">
+          <option value="">— Select / اختر —</option>
+          <option value="Doctor">Doctor / طبیب</option>
+          <option value="Nurse">Nurse / ممرض</option>
+          <option value="Allied Health">Allied Health / صحة مساندة</option>
+        </select>
+      </div>
+    </div>
+    <div class="instructions-box">
+      <div class="inst-title">Instructions / التعلیمات</div>
+      <p>This survey has THREE parts. Please answer ALL questions honestly. Your responses are confidential and will not affect your course result. There are no right or wrong answers in Parts B and C.</p>
+      <p>یتكّون ھذا الاستبیان من ثلاثة أجزاء. یُرجى الإجابة عن جمیع الأسئلة بصدق. إجاباتك سریة ولن تؤثر على نتیجتك في الدورة.</p>
+    </div>
+    <div class="parts-summary">
+      <div class="part-chip"><span class="chip-letter">A</span><div class="chip-name">Knowledge / المعرفة</div><div class="chip-count">30 Questions</div></div>
+      <div class="part-chip"><span class="chip-letter">B</span><div class="chip-name">Competence / الكفاءة</div><div class="chip-count">28 Items</div></div>
+      <div class="part-chip"><span class="chip-letter">C</span><div class="chip-name">MCI Readiness / الاستعداد</div><div class="chip-count">20 Items</div></div>
+    </div>
+    <button class="btn-start" onclick="startAssessment()">Begin Assessment — بدء التقییم →</button>
+  </div>
+</div>
+
+<!-- ===== PART A ===== -->
+<div id="pageA" class="hidden">
+  <div class="section-header">
+    <div class="section-icon">A</div>
+    <div><div class="section-title-en">Part A — Knowledge Test</div><div class="section-title-ar">الجزء أ — اختبار المعرفة (٣٠ سؤالاً، ٣٠ درجة)</div></div>
+  </div>
+  <div class="section-instruction">Each question has ONE correct answer. Each correct answer = 1 mark. Time: ~25 minutes.
+    <span class="ar">لكل سؤال إجابة صحیحة واحدة. كل إجابة صحیحة = درجة واحدة. الوقت: حوالي ٢٥ دقیقة.</span>
+  </div>
+  <div id="partAQuestions"></div>
+  <div class="nav-row">
+    <button class="btn-back" onclick="showPage('pageCover')">← Back</button>
+    <div class="progress-text" id="progA">0 / 30</div>
+    <button class="btn-next" onclick="goToPartB()">Next: Part B →</button>
+  </div>
+</div>
+
+<!-- ===== PART B ===== -->
+<div id="pageB" class="hidden">
+  <div class="section-header">
+    <div class="section-icon">B</div>
+    <div><div class="section-title-en">Part B — Self-Rated Competence</div><div class="section-title-ar">الجزء ب — استبیان الكفاءة الذاتیة (٢٨ بنداً)</div></div>
+  </div>
+  <div class="section-instruction">Rate your confidence 1–5. There are no right or wrong answers.
+    <span class="ar">قّیم مستوى ثقتك من ١ إلى ٥. لا توجد إجابات صحیحة أو خاطئة.</span>
+  </div>
+  <div id="partBQuestions"></div>
+  <div class="nav-row">
+    <button class="btn-back" onclick="showPage('pageA')">← Back</button>
+    <div class="progress-text" id="progB">0 / 28</div>
+    <button class="btn-next" onclick="goToPartC()">Next: Part C →</button>
+  </div>
+</div>
+
+<!-- ===== PART C ===== -->
+<div id="pageC" class="hidden">
+  <div class="section-header">
+    <div class="section-icon">C</div>
+    <div><div class="section-title-en">Part C — MCI Preparedness Survey</div><div class="section-title-ar">الجزء ج — استبیان الاستعداد للحوادث الجسیمة</div></div>
+  </div>
+  <div class="section-instruction">Answer based on your experience BEFORE this course. This is not a test.
+    <span class="ar">أجب بناءً على خبرتك قبل ھذه الدورة. ھذا لیس اختباراً.</span>
+  </div>
+  <div id="partCQuestions"></div>
+  <div class="nav-row">
+    <button class="btn-back" onclick="showPage('pageB')">← Back</button>
+    <div class="progress-text" id="progC">0 / 20</div>
+    <button class="btn-next" onclick="submitAssessment()">Submit & Save ✓</button>
+  </div>
+</div>
+
+<!-- ===== RESULTS ===== -->
+<div id="pageResults" class="hidden">
+  <div class="results-wrap">
+    <div class="results-banner pre" id="resultsBanner">
+      <h2 id="resultsTitle">Assessment Complete</h2>
+      <p id="resultsSubtitle">Here is your scored results breakdown</p>
+    </div>
+
+    <!-- BIG SCORE -->
+    <div class="score-hero" id="scoreHero">
+      <div class="score-circle" id="scoreCircle">
+        <div class="sc-val" id="scVal">—</div>
+        <div class="sc-total" id="scTotal">/ 38</div>
+        <div class="sc-pct" id="scPct">—%</div>
+      </div>
+      <div class="score-meta">
+        <h3>Knowledge Score (Part A + C-1)</h3>
+        <div class="score-grade" id="scoreGrade">—</div>
+        <p id="scoreMsg">—</p>
+        <p style="font-size:12px;color:var(--gray-400);margin-top:8px;">Part B and C-2 are self-rating scales — no scoring, used for statistical analysis only.</p>
+      </div>
+    </div>
+
+    <div class="results-body">
+      <!-- PARTICIPANT INFO -->
+      <div class="participant-info" id="resultParticipantInfo"></div>
+
+      <!-- SYNC BADGE -->
+      <div style="text-align:center;margin-bottom:16px;">
+        <span class="sync-badge ok" id="syncBadge">☁️ Saved to Google Sheets</span>
+      </div>
+
+      <!-- DOMAIN TABLE -->
+      <h3 style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:12px;">Domain Score Breakdown</h3>
+      <table class="domain-table" id="domainTable">
+        <thead><tr>
+          <th>Domain</th><th>Score</th><th>Max</th><th>%</th><th>Performance</th>
+        </tr></thead>
+        <tbody id="domainTableBody"></tbody>
+      </table>
+
+      <!-- PART B / C-2 SUMMARY -->
+      <h3 style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:12px;">Self-Rating Summary (Parts B & C-2)</h3>
+      <table class="domain-table">
+        <thead><tr><th>Instrument</th><th>Items</th><th>Sum Score</th><th>Max</th><th>Mean ± Note</th></tr></thead>
+        <tbody id="likertSummaryBody"></tbody>
+      </table>
+
+      <!-- REVIEW ANSWERS TOGGLE -->
+      <div class="review-section">
+        <button class="review-toggle" onclick="toggleReview()">
+          <span>📋 Review Answers — Part A & C-1 (with correct answers shown)</span>
+          <span id="reviewArrow">▼</span>
+        </button>
+        <div class="review-content" id="reviewContent"></div>
+      </div>
+
+      <div id="retrySection" class="hidden" style="margin-top:16px;">
+        <button class="retry-btn" onclick="retrySend()">⟳ Retry Submission to Google Sheets</button>
+      </div>
+
+      <div style="margin-top:20px;">
+        <button class="btn-print" onclick="window.print()">🖨 Print / Export Results</button>
+        <button class="btn-restart" onclick="location.reload()">Start New Assessment / استبیان جدید</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- .main -->
+
+<!-- OVERLAY -->
+<div class="submit-overlay hidden" id="submitOverlay">
+  <div class="submit-card">
+    <div class="submit-spinner"></div>
+    <div class="submit-title">Submitting & Scoring...</div>
+    <div class="submit-msg">Saving to Google Sheets and calculating your score.<br><span style="font-family:'Noto Sans Arabic',sans-serif;">جاري الحفظ وحساب النتیجة. يُرجى الانتظار.</span></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// GOOGLE SHEETS URL
+// ============================================================
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbwOp1Jm5PX79q7KjiJ6ELplu-Mt5CvWpy9uX6XjV_i57jLWHVA-Bpyo2CICtiz8HEdwiA/exec';
+
+// ============================================================
+// ANSWER KEYS (from official IELS answer key PDF)
+// ============================================================
+// Part A: Q1-Q30 correct answers
+const ANSWER_KEY_A = {
+  1:'A',2:'B',3:'B',4:'C',5:'B',6:'B',7:'B',8:'C',   // Domain 1 (Q1-8)
+  9:'B',10:'B',11:'B',12:'C',13:'C',14:'B',15:'C',16:'B', // Domain 2 (Q9-16)
+  17:'D',18:'B',19:'B',20:'B',21:'B',22:'B',23:'B',        // Domain 3 (Q17-23)
+  24:'C',25:'D',26:'C',27:'B',28:'B',29:'B',30:'B'         // Domain 4 (Q24-30)
+};
+
+// Part C-1: C1-C8 correct answers (Pre-test only)
+const ANSWER_KEY_C1 = {
+  1:'B',2:'C',3:'B',4:'B',5:'B',6:'C',7:'B',8:'B'
+};
+
+// Domain ranges for Part A
+const DOMAINS_A = [
+  {name:'Domain 1: Cardiac & Medical Resuscitation', nameAr:'الإنعاش القلبي والطبي', qs:[1,2,3,4,5,6,7,8], max:8},
+  {name:'Domain 2: Paediatric Emergencies',          nameAr:'طوارئ الأطفال',          qs:[9,10,11,12,13,14,15,16], max:8},
+  {name:'Domain 3: Trauma Management',               nameAr:'إدارة الصدمات',          qs:[17,18,19,20,21,22,23], max:7},
+  {name:'Domain 4: In-Hospital MCI',                 nameAr:'الحوادث الجسیمة المستشفویة', qs:[24,25,26,27,28,29,30], max:7},
+];
+
+// ============================================================
+// STATE
+// ============================================================
+const answers = {A:{},B:{},C:{}};
+let testType = 'PRE';
+let lastPayload = null;
+
+// ============================================================
+// TEST TYPE
+// ============================================================
+function setTestType(t){
+  testType=t;
+  document.getElementById('btnPre').className='test-type-btn'+(t==='PRE'?' active-pre':'');
+  document.getElementById('btnPost').className='test-type-btn'+(t==='POST'?' active-post':'');
+  document.getElementById('headerBadge').textContent=t+'-TEST';
+  document.getElementById('coverBadge').textContent=t==='PRE'?'PRE-COURSE · قبل الدورة':'POST-COURSE · بعد الدورة';
+}
+
+// ============================================================
+// DATA
+// ============================================================
+const partAData=[
+  {domain:"Domain 1: Cardiac & Medical Resuscitation",domainAr:"الإنعاش القلبي والطبي",qs:[
+    {n:1,en:"In a witnessed cardiac arrest in an adult, what is the FIRST action after confirming unresponsiveness?",ar:"في حالة توقف القلب المشھود عند بالغ، ما ھي الخطوة الأولى بعد التأكد من فقدان الوعي؟",opts:[{l:"A",en:"Call for help and activate emergency response",ar:"استدعاء المساعدة وتفعیل الاستجابة الطارئة"},{l:"B",en:"Begin chest compressions immediately",ar:"البدء فوراً بضغطات الصدر"},{l:"C",en:"Give 2 rescue breaths",ar:"إعطاء نفسین إنقاذیین"},{l:"D",en:"Apply the AED",ar:"تطبیق جھاز إزالة الرجفان الآلي"}]},
+    {n:2,en:"What is the correct compression-to-ventilation ratio for adult two-rescuer CPR?",ar:"ما ھي النسبة الصحیحة للضغطات إلى التھویة في الإنعاش القلبي الرئوي للبالغین بوجود منقذَین؟",opts:[{l:"A",en:"15:2",ar:"١٥:٢"},{l:"B",en:"30:2",ar:"٣٠:٢"},{l:"C",en:"30:1",ar:"٣٠:١"},{l:"D",en:"15:1",ar:"١٥:١"}]},
+    {n:3,en:"What is the recommended compression depth for adult CPR?",ar:"ما ھو العمق الموصى بھ لضغطات الإنعاش القلبي الرئوي عند البالغین؟",opts:[{l:"A",en:"2–3 cm",ar:"٢–٣ سم"},{l:"B",en:"At least 5 cm (but not more than 6 cm)",ar:"على الأقل ٥ سم (ولیس أكثر من ٦ سم)"},{l:"C",en:"6–8 cm",ar:"٦–٨ سم"},{l:"D",en:"1–2 cm",ar:"١–٢ سم"}]},
+    {n:4,en:"Which of the following is a shockable rhythm during cardiac arrest?",ar:"أيٌّ مما یلي يُعدّ نظماً قابلاً للصدمة الكھربائیة؟",opts:[{l:"A",en:"Asystole",ar:"الانقطاع الكھربائي"},{l:"B",en:"Pulseless Electrical Activity (PEA)",ar:"النشاط الكھربائي بلا نبض"},{l:"C",en:"Ventricular Fibrillation (VF)",ar:"الرجفان البطیني (VF)"},{l:"D",en:"Sinus bradycardia",ar:"بطء الجیب"}]},
+    {n:5,en:"What is the correct dose of adrenaline (epinephrine) in adult cardiac arrest?",ar:"ما ھي الجرعة الصحیحة من الأدرینالین في توقف القلب؟",opts:[{l:"A",en:"0.5 mg IV every 3–5 minutes",ar:"٠.٥ ملغ وریدیاً كل ٣–٥ دقائق"},{l:"B",en:"1 mg IV every 3–5 minutes",ar:"١ ملغ وریدیاً كل ٣–٥ دقائق"},{l:"C",en:"2 mg IV once",ar:"٢ ملغ وریدیاً مرة واحدة"},{l:"D",en:"0.1 mg IV every 10 minutes",ar:"٠.١ ملغ وریدیاً كل ١٠ دقائق"}]},
+    {n:6,en:"Following ROSC, what SpO₂ target should be maintained?",ar:"بعد عودة الدورة الدمویة التلقائیة (ROSC)، ما المستوى المستھدف لتشبع الأكسجین؟",opts:[{l:"A",en:"100% (give maximum oxygen always)",ar:"١٠٠٪ (أعطِ أقصى كمیة دائماً)"},{l:"B",en:"94–98%",ar:"٩٤–٩٨٪"},{l:"C",en:"Below 90%",ar:"أقل من ٩٠٪"},{l:"D",en:"SpO₂ monitoring not required post-ROSC",ar:"لا حاجة للمراقبة"}]},
+    {n:7,en:"In the management of an unconscious adult with airway obstruction, what is the FIRST intervention?",ar:"في إدارة بالغ فاقد للوعي مع انسداد مجرى الھواء، ما ھي أول خطوة علاجیة؟",opts:[{l:"A",en:"Insert an oropharyngeal airway (OPA)",ar:"إدخال مجرى ھواء فموي بلعومي (OPA)"},{l:"B",en:"Head tilt-chin lift or jaw thrust",ar:"إمالة الرأس ورفع الذقن أو دفع الفك"},{l:"C",en:"Immediate intubation",ar:"التنبیب الفوري"},{l:"D",en:"Begin BVM ventilation without repositioning",ar:"البدء بتھویة BVM دون إعادة وضع المریض"}]},
+    {n:8,en:"Which is a reversible cause of cardiac arrest from the Hs — specifically one of the 'Hs'?",ar:"أيٌّ مما یلي يُعدّ سبباً قابلاً للعلاج من الـ Hs؟",opts:[{l:"A",en:"Thrombosis",ar:"تجلط الدم"},{l:"B",en:"Tamponade",ar:"انضغاط القلب"},{l:"C",en:"Hypothermia",ar:"انخفاض حرارة الجسم"},{l:"D",en:"Toxins",ar:"السموم"}]}
+  ]},
+  {domain:"Domain 2: Paediatric Emergencies",domainAr:"طوارئ الأطفال",qs:[
+    {n:9,en:"Using the WETFLAG formula, what is the estimated weight of a 6-year-old child?",ar:"باستخدام معادلة WETFLAG، ما ھو الوزن التقدیري لطفل عمره ٦ سنوات؟",opts:[{l:"A",en:"10 kg",ar:"١٠ كغ"},{l:"B",en:"20 kg",ar:"٢٠ كغ"},{l:"C",en:"15 kg",ar:"١٥ كغ"},{l:"D",en:"25 kg",ar:"٢٥ كغ"}]},
+    {n:10,en:"In paediatric BLS, how many initial rescue breaths are given BEFORE commencing chest compressions?",ar:"في إنعاش الأطفال، كم عدد أنفاس الإنقاذ الأولیة قبل الضغطات؟",opts:[{l:"A",en:"2",ar:"٢"},{l:"B",en:"5",ar:"٥"},{l:"C",en:"10",ar:"١٠"},{l:"D",en:"None — compressions first",ar:"لا شيء — الضغطات أولاً"}]},
+    {n:11,en:"What is the correct compression-to-ventilation ratio for two-rescuer paediatric CPR?",ar:"ما ھي النسبة الصحیحة للضغطات إلى التھویة في إنعاش الأطفال بوجود منقذَین؟",opts:[{l:"A",en:"30:2",ar:"٣٠:٢"},{l:"B",en:"15:2",ar:"١٥:٢"},{l:"C",en:"15:1",ar:"١٥:١"},{l:"D",en:"20:2",ar:"٢٠:٢"}]},
+    {n:12,en:"A 3-year-old with inspiratory stridor, barking cough, mild subcostal retractions, SpO₂ 95%. Most likely diagnosis?",ar:"طفل ٣ سنوات مع صریر شھیقي وسعال نباحي وارتداد خفیف. ما التشخیص الأرجح؟",opts:[{l:"A",en:"Epiglottitis",ar:"التھاب لسان المزمار"},{l:"B",en:"Severe asthma",ar:"ربو حاد"},{l:"C",en:"Croup (laryngotracheobronchitis)",ar:"الخانوق"},{l:"D",en:"Foreign body aspiration",ar:"استنشاق جسم غریب"}]},
+    {n:13,en:"FIRST-LINE drug and route for a paediatric seizure when IV access is not yet established?",ar:"الدواء من الخط الأول وطریق إعطائھ لنوبة صرع عند طفل بدون وصول وریدي؟",opts:[{l:"A",en:"IV lorazepam",ar:"لورازیبام وریدي"},{l:"B",en:"Rectal diazepam",ar:"دیازیبام شرجي"},{l:"C",en:"Buccal midazolam (0.3 mg/kg)",ar:"میدازولام شدقي (٠.٣ ملغ/كغ)"},{l:"D",en:"IV phenytoin",ar:"فینیتوین وریدي"}]},
+    {n:14,en:"In a child with compensated shock, what is the EARLIEST and most reliable clinical sign?",ar:"في الصدمة التعویضیة عند الطفل، أيٌّ مما یلي يُعدّ أول علامة سریریة؟",opts:[{l:"A",en:"Hypotension",ar:"انخفاض ضغط الدم"},{l:"B",en:"Tachycardia",ar:"تسارع القلب"},{l:"C",en:"Cyanosis",ar:"الزرقة"},{l:"D",en:"Bradycardia",ar:"بطء القلب"}]},
+    {n:15,en:"What is the correct IV/IO fluid bolus for a child in septic shock?",ar:"ما ھي الجرعة الصحیحة لبولس السوائل للطفل المصاب بصدمة الإنتان؟",opts:[{l:"A",en:"5 mL/kg",ar:"٥ مل/كغ"},{l:"B",en:"50 mL/kg",ar:"٥٠ مل/كغ"},{l:"C",en:"10–20 mL/kg",ar:"١٠–٢٠ مل/كغ"},{l:"D",en:"100 mL/kg",ar:"١٠٠ مل/كغ"}]},
+    {n:16,en:"Which airway position is correct for an infant (< 1 year) during resuscitation?",ar:"ما ھو وضع مجرى الھواء الصحیح للرضیع (أقل من سنة) أثناء الإنعاش؟",opts:[{l:"A",en:"Full extension of the neck",ar:"مدّ الرقبة بالكامل"},{l:"B",en:"Neutral position using a shoulder roll",ar:"الوضع المحاید باستخدام وسادة تحت الكتفین"},{l:"C",en:"Flexed neck position",ar:"وضع الرقبة منحنیة"},{l:"D",en:"Sniffing position with large occiput support",ar:"وضع الشّم مع دعم القفص القفوي"}]}
+  ]},
+  {domain:"Domain 3: Trauma Management",domainAr:"إدارة الصدمات",qs:[
+    {n:17,en:"In the primary survey using (C)ABCDE, which step addresses catastrophic haemorrhage?",ar:"في المسح الأولي (C)ABCDE، أيٌّ من الخطوات یعالج النزیف الكارثي؟",opts:[{l:"A",en:"A — Airway",ar:"أ — مجرى الھواء"},{l:"B",en:"B — Breathing",ar:"ب — التنفس"},{l:"C",en:"C — Circulation",ar:"ج — الدورة الدمویة"},{l:"D",en:"Addressed before A using (C)ABCDE",ar:"يُعالج قبل الخطوة أ باستخدام (C)ABCDE"}]},
+    {n:18,en:"Maximum acceptable systolic BP in adult with penetrating torso trauma before definitive haemorrhage control?",ar:"الھدف الأقصى المقبول لضغط الدم الانقباضي في صدمة الجذع الاختراقیة قبل السیطرة على النزیف؟",opts:[{l:"A",en:"120 mmHg",ar:"١٢٠ ملم زئبق"},{l:"B",en:"80–90 mmHg (permissive hypotension)",ar:"٨٠–٩٠ ملم زئبق (انخفاض مسموح بھ)"},{l:"C",en:"100 mmHg",ar:"١٠٠ ملم زئبق"},{l:"D",en:"150 mmHg",ar:"١٥٠ ملم زئبق"}]},
+    {n:19,en:"Tranexamic Acid (TXA) in trauma should ideally be given within what time frame of injury?",ar:"ینبغي إعطاء حمض الترانیكسامیك (TXA) خلال أي إطار زمني من وقوع الإصابة؟",opts:[{l:"A",en:"Within 1 hour",ar:"خلال ساعة واحدة"},{l:"B",en:"Within 3 hours",ar:"خلال ٣ ساعات"},{l:"C",en:"Within 6 hours",ar:"خلال ٦ ساعات"},{l:"D",en:"Within 12 hours",ar:"خلال ١٢ ساعة"}]},
+    {n:20,en:"Trauma patient: absent breath sounds left, hypotension, tracheal deviation right. Most likely diagnosis?",ar:"مریض صدمة مع غیاب أصوات التنفس على الیسار وانخفاض ضغط الدم وانحراف الرغامى نحو الیمین. التشخیص الأرجح؟",opts:[{l:"A",en:"Haemothorax",ar:"استرواح الدم"},{l:"B",en:"Left tension pneumothorax",ar:"استرواح الصدر الانضغاطي الأیسر"},{l:"C",en:"Cardiac tamponade",ar:"انضغاط القلب"},{l:"D",en:"Pulmonary contusion",ar:"كدمة رئویة"}]},
+    {n:21,en:"In the Massive Transfusion Protocol (MTP), recommended ratio of pRBC : FFP : Platelets?",ar:"في بروتوكول نقل الدم الضخم، ما ھي النسبة الموصى بھا من كریات الدم : البلازما : الصفائح؟",opts:[{l:"A",en:"2:1:1",ar:"٢:١:١"},{l:"B",en:"1:1:1",ar:"١:١:١"},{l:"C",en:"3:2:1",ar:"٣:٢:١"},{l:"D",en:"1:2:1",ar:"١:٢:١"}]},
+    {n:22,en:"FIRST priority when managing a patient with suspected cervical spine injury?",ar:"أولى الأولویات عند إدارة مریض يُشتبھ بإصابة العمود الفقري العنقي؟",opts:[{l:"A",en:"Immobilise the spine before doing anything else",ar:"تثبیت العمود الفقري قبل أي شيء آخر"},{l:"B",en:"Airway management while maintaining cervical spine precautions",ar:"إدارة مجرى الھواء مع الحفاظ على احتیاطات العمود الفقري"},{l:"C",en:"Obtain cervical X-ray immediately",ar:"إجراء تصویر الرقبة بالأشعة فوراً"},{l:"D",en:"Insert IV access",ar:"إنشاء وصول وریدي"}]},
+    {n:23,en:"A tourniquet applied for haemorrhage control in the field should be:",ar:"عاصبة تُوضع للسیطرة على النزیف في مكان الحادث یجب أن:",opts:[{l:"A",en:"Removed in the ED once IV access is established",ar:"تُزال في قسم الطوارئ بمجرد إنشاء الوصول الوریدي"},{l:"B",en:"Left in place — time noted on tag — not removed until surgical review",ar:"تُترك في مكانھا مع تدوین وقت التطبیق ولا تُزال إلا بعد مراجعة جراحیة"},{l:"C",en:"Loosened every 30 minutes to restore circulation",ar:"تُرَخَّى كل ٣٠ دقیقة"},{l:"D",en:"Applied only if direct pressure has failed for more than 20 minutes",ar:"تُطَبَّق فقط إذا فشل الضغط المباشر لأكثر من ٢٠ دقیقة"}]}
+  ]},
+  {domain:"Domain 4: In-Hospital MCI",domainAr:"الحوادث الجسیمة المستشفویة",qs:[
+    {n:24,en:"In the START triage algorithm, a patient who is walking towards you is assigned which category?",ar:"في خوارزمیة الفرز START، أيّ تصنیف يُعطى للمریض الذي یمشي نحوك؟",opts:[{l:"A",en:"T1 — Immediate",ar:"T1 — فوري"},{l:"B",en:"T2 — Urgent",ar:"T2 — عاجل"},{l:"C",en:"T3 — Minor",ar:"T3 — طفیف"},{l:"D",en:"T4 — Expectant",ar:"T4 — متوقع"}]},
+    {n:25,en:"In JumpSTART, an apnoeic child who does NOT breathe after 5 rescue breaths is categorised as:",ar:"في خوارزمیة JumpSTART، يُصنَّف الطفل الذي لا یتنفس بعد ٥ أنفاس إنقاذیة بـ:",opts:[{l:"A",en:"T1 — Immediate",ar:"T1 — فوري"},{l:"B",en:"T2 — Urgent",ar:"T2 — عاجل"},{l:"C",en:"T3 — Minor",ar:"T3 — طفیف"},{l:"D",en:"T4 — Expectant",ar:"T4 — متوقع"}]},
+    {n:26,en:"In HICS, who is responsible for supervising all treatment zones during an MCI?",ar:"في نظام HICS، من المسؤول عن الإشراف على جمیع مناطق العلاج؟",opts:[{l:"A",en:"Triage Officer",ar:"ضابط الفرز"},{l:"B",en:"Medical Commander",ar:"القائد الطبي"},{l:"C",en:"Treatment Officer",ar:"ضابط العلاج"},{l:"D",en:"Documentation Officer",ar:"ضابط التوثیق"}]},
+    {n:27,en:"In SBAR communication, what does the 'R' stand for?",ar:"في التواصل عبر نموذج SBAR، ماذا یعني حرف 'R'؟",opts:[{l:"A",en:"Report",ar:"تقریر"},{l:"B",en:"Recommendation",ar:"توصیة"},{l:"C",en:"Review",ar:"مراجعة"},{l:"D",en:"Response",ar:"استجابة"}]},
+    {n:28,en:"A T2 (Urgent) casualty during an MCI should be re-triaged at what frequency?",ar:"كم مرة ینبغي إعادة فرز ضحیة T2 (عاجل) أثناء الحادثة الجسیمة؟",opts:[{l:"A",en:"Every 5–10 minutes",ar:"كل ٥–١٠ دقائق"},{l:"B",en:"Every 15–20 minutes",ar:"كل ١٥–٢٠ دقیقة"},{l:"C",en:"Every 30 minutes",ar:"كل ٣٠ دقیقة"},{l:"D",en:"Only when the patient deteriorates",ar:"فقط عند تدھور الحالة"}]},
+    {n:29,en:"In an MCI, blood products should be allocated to which triage categories?",ar:"في الحوادث الجسیمة، لأيّ فئات الفرز یجب تخصیص منتجات الدم؟",opts:[{l:"A",en:"T1 and T4 only",ar:"T1 و T4 فقط"},{l:"B",en:"T1 patients only",ar:"مرضى T1 فقط"},{l:"C",en:"T1 and T2 patients",ar:"مرضى T1 و T2"},{l:"D",en:"All patients equally",ar:"جمیع المرضى بالتساوي"}]},
+    {n:30,en:"In ATMIST handover, the first 'T' refers to:",ar:"في نموذج ATMIST، یشیر الحرف 'T' الأول إلى:",opts:[{l:"A",en:"Time of arrival at the ED",ar:"وقت الوصول إلى الطوارئ"},{l:"B",en:"Time of injury",ar:"وقت الإصابة"},{l:"C",en:"Type of injury",ar:"نوع الإصابة"},{l:"D",en:"Treatment given",ar:"العلاج المُعطى"}]}
+  ]}
+];
+
+const partBData=[
+  {domain:"Domain 1: Cardiac & Medical Resuscitation",domainAr:"الإنعاش القلبي والطبي",qs:[
+    {n:1,en:"Perform high-quality adult chest compressions (correct rate, depth, and recoil)",ar:"أداء ضغطات صدر عالیة الجودة للبالغین"},
+    {n:2,en:"Deliver effective rescue breaths using a bag-valve-mask (BVM)",ar:"إعطاء أنفاس إنقاذیة فعّالة باستخدام BVM"},
+    {n:3,en:"Recognise and manage a shockable vs non-shockable cardiac arrest rhythm",ar:"التعرف على نظم توقف القلب القابل للصدمة وإدارتھ"},
+    {n:4,en:"Use an AED safely and correctly on an adult patient",ar:"استخدام جھاز إزالة الرجفان (AED) بأمان"},
+    {n:5,en:"Recognise the reversible causes of cardiac arrest (Hs and Ts)",ar:"التعرف على الأسباب القابلة للعلاج لتوقف القلب (الـ Hs والـ Ts)"},
+    {n:6,en:"Manage a post-ROSC patient including oxygenation targets and temperature control",ar:"إدارة مریض ما بعد ROSC بما فیھا أھداف الأكسجة والتحكم في الحرارة"},
+    {n:7,en:"Lead or participate effectively in a structured adult resuscitation team",ar:"قیادة أو المشاركة بفعالیة في فریق الإنعاش"}
+  ]},
+  {domain:"Domain 2: Paediatric Emergencies",domainAr:"طوارئ الأطفال",qs:[
+    {n:8,en:"Estimate paediatric drug doses using WETFLAG or the Broselow tape",ar:"تقدیر جرعات الأدویة الأطفالیة باستخدام WETFLAG أو شریط Broselow"},
+    {n:9,en:"Open and maintain a paediatric airway using correct positioning (neutral/sniffing)",ar:"فتح وصون مجرى ھواء الطفل باستخدام وضع صحیح"},
+    {n:10,en:"Perform paediatric CPR correctly (infant and child techniques)",ar:"تنفیذ الإنعاش القلبي الرئوي الأطفالي بشكل صحیح"},
+    {n:11,en:"Recognise the difference between respiratory distress and respiratory failure in a child",ar:"التمییز بین ضیق التنفس وفشل التنفس عند الطفل"},
+    {n:12,en:"Manage an active paediatric seizure including correct drug selection and route",ar:"إدارة نوبة الصرع النشطة عند الطفل"},
+    {n:13,en:"Insert or supervise insertion of an intraosseous (IO) needle in a child",ar:"إدخال إبرة داخل العظم (IO) أو الإشراف علیھا عند الطفل"},
+    {n:14,en:"Recognise compensated vs decompensated shock in a child and initiate treatment",ar:"التعرف على الصدمة التعویضیة مقابل المعیرة عند الطفل وبدء العلاج"}
+  ]},
+  {domain:"Domain 3: Trauma Management",domainAr:"إدارة الصدمات",qs:[
+    {n:15,en:"Apply a tourniquet correctly for life-threatening limb haemorrhage",ar:"تطبیق العاصبة بشكل صحیح لوقف النزیف الحاد"},
+    {n:16,en:"Perform wound packing with haemostatic gauze",ar:"إجراء حشو الجرح بالشاش المرقئ"},
+    {n:17,en:"Conduct a systematic primary survey (ABCDE) for a trauma patient",ar:"إجراء مسح أولي منھجي (ABCDE) لمریض صدمة"},
+    {n:18,en:"Recognise and manage tension pneumothorax (needle decompression)",ar:"التعرف على استرواح الصدر الانضغاطي وإدارتھ"},
+    {n:19,en:"Apply cervical spine precautions and perform a team log roll",ar:"تطبیق احتیاطات العمود الفقري العنقي وإجراء دوران الجذع الجماعي"},
+    {n:20,en:"Communicate key trauma assessment findings using ATMIST handover format",ar:"إیصال نتائج تقییم الصدمة باستخدام نموذج ATMIST"},
+    {n:21,en:"Calculate and administer the correct fluid resuscitation volume in haemorrhagic shock",ar:"حساب وإعطاء حجم الإنعاش بالسوائل الصحیح في الصدمة النزفیة"}
+  ]},
+  {domain:"Domain 4: In-Hospital MCI",domainAr:"الحوادث الجسیمة المستشفویة",qs:[
+    {n:22,en:"Apply the START triage algorithm rapidly and correctly at a mass casualty triage point",ar:"تطبیق خوارزمیة فرز START بسرعة وبشكل صحیح"},
+    {n:23,en:"Apply the JumpSTART algorithm for paediatric casualties in an MCI",ar:"تطبیق خوارزمیة JumpSTART للضحایا الأطفال"},
+    {n:24,en:"Activate HICS and assign the five key command roles",ar:"تفعیل HICS وتعیین أدوار القیادة الخمسة"},
+    {n:25,en:"Deliver a complete SBAR situation report to the Medical Commander",ar:"إیصال تقریر حالة SBAR كامل إلى القائد الطبي"},
+    {n:26,en:"Deliver a complete ATMIST patient handover in the context of an MCI",ar:"تسلیم حالة مریض ATMIST كاملة في سیاق الحوادث الجسیمة"},
+    {n:27,en:"Establish and manage treatment zones (T1–T4) within the ED during an MCI",ar:"إنشاء وإدارة مناطق العلاج (T1–T4) داخل قسم الطوارئ"},
+    {n:28,en:"Allocate limited resources (blood products, resus bays, staff) by triage priority",ar:"توزیع الموارد المحدودة وفق أولویة الفرز"}
+  ]}
+];
+
+const partCData={
+  c1:[
+    {n:1,en:"What does 'Code Orange' typically mean in a hospital setting?",ar:"ماذا یعني 'الشیفرة البرتقالیة' في البیئة المستشفویة؟",opts:[{l:"A",en:"Fire emergency",ar:"طارئ حریق"},{l:"B",en:"Mass casualty / external disaster activation",ar:"تفعیل الحوادث الجسیمة / الكارثة الخارجیة"},{l:"C",en:"Chemical spill",ar:"انسكاب مادة كیمیائیة"},{l:"D",en:"Infant abduction",ar:"اختطاف رضیع"}]},
+    {n:2,en:"In the START triage system, what does 'T4 — Expectant' mean?",ar:"في نظام الفرز START، ماذا یعني 'T4 — متوقع'؟",opts:[{l:"A",en:"Patient needs immediate surgery",ar:"المریض یحتاج جراحة فوریة"},{l:"B",en:"Patient has minor injuries",ar:"إصابات المریض طفیفة"},{l:"C",en:"Patient's injuries are unsurvivable given available resources",ar:"إصابات المریض غیر قابلة للنجاة بالموارد المتاحة"},{l:"D",en:"Patient has been successfully resuscitated",ar:"تم إنعاش المریض بنجاح"}]},
+    {n:3,en:"What does HICS stand for?",ar:"ماذا یعني اختصار HICS؟",opts:[{l:"A",en:"Hospital Internal Communication System",ar:"نظام التواصل الداخلي المستشفوي"},{l:"B",en:"Hospital Incident Command System",ar:"نظام قیادة الحوادث المستشفویة"},{l:"C",en:"Health Incident Critical Score",ar:"درجة الرعایة الحرجة"},{l:"D",en:"High-Intensity Care System",ar:"نظام الرعایة عالیة الكثافة"}]},
+    {n:4,en:"Which of the following is the role of the Medical Commander during an MCI?",ar:"أيٌّ من التالي يُمثل دور القائد الطبي أثناء الحادثة الجسیمة؟",opts:[{l:"A",en:"Perform chest compressions on T1 patients",ar:"تنفیذ ضغطات الصدر على مرضى T1"},{l:"B",en:"Oversee all treatment zones from command post",ar:"الإشراف على جمیع مناطق العلاج من موقع القیادة"},{l:"C",en:"Perform triage on all incoming casualties",ar:"فرز جمیع الضحایا القادمین"},{l:"D",en:"Document all casualty information",ar:"توثیق معلومات جمیع الضحایا"}]},
+    {n:5,en:"In ATMIST, the letter 'M' refers to:",ar:"في نموذج ATMIST، یشیر الحرف 'M' إلى:",opts:[{l:"A",en:"Medications given",ar:"الأدویة المُعطاة"},{l:"B",en:"Mechanism of injury",ar:"آلیة الإصابة"},{l:"C",en:"Medical history",ar:"التاریخ الطبي"},{l:"D",en:"Monitoring data",ar:"بیانات المراقبة"}]},
+    {n:6,en:"Who is responsible for assigning incoming casualties to treatment zones during an MCI?",ar:"من المسؤول عن توجیھ الضحایا القادمین إلى مناطق العلاج؟",opts:[{l:"A",en:"Treatment Officer",ar:"ضابط العلاج"},{l:"B",en:"Liaison Officer",ar:"ضابط الاتصال"},{l:"C",en:"Triage Officer",ar:"ضابط الفرز"},{l:"D",en:"Documentation Officer",ar:"ضابط التوثیق"}]},
+    {n:7,en:"When should the Medical Commander deliver the first SBAR report?",ar:"متى یجب على القائد الطبي تقدیم أول تقریر SBAR؟",opts:[{l:"A",en:"Only at the end of the MCI",ar:"فقط في نھایة الحادثة"},{l:"B",en:"Every 10–15 minutes throughout the incident",ar:"كل ١٠–١٥ دقیقة طوال الحادثة"},{l:"C",en:"Only when things are going wrong",ar:"فقط عند حدوث مشكلات"},{l:"D",en:"Once per hour",ar:"مرة واحدة في الساعة"}]},
+    {n:8,en:"In closed-loop communication, after the sender gives an instruction, what does the receiver do?",ar:"في التواصل الحلقي المغلق، بعد أن يُعطي المُرسِل تعلیمة، ماذا یفعل المُستقبِل؟",opts:[{l:"A",en:"Carries out the instruction silently",ar:"یُنفذ التعلیمة بصمت"},{l:"B",en:"Reads back the instruction word-for-word, then sender confirms",ar:"يُعید التعلیمة حرفیاً ثم يُؤكد المُرسِل"},{l:"C",en:"Writes the instruction down and acts later",ar:"یُدوّن التعلیمة وینفذھا لاحقاً"},{l:"D",en:"Asks the sender to repeat it twice",ar:"یطلب من المُرسِل تكرارھا مرتین"}]}
+  ],
+  c2:[
+    {n:9,en:"I am aware of my hospital's mass casualty / disaster plan",ar:"أنا على درایة بخطة الكوارث في مستشفاي"},
+    {n:10,en:"I know my designated role when a Code Orange is declared at my hospital",ar:"أعرف دوري المحدد عند إعلان الشیفرة البرتقالیة"},
+    {n:11,en:"I am confident in my ability to apply the START triage algorithm correctly during an MCI",ar:"أثق بقدرتي على تطبیق خوارزمیة الفرز START بشكل صحیح"},
+    {n:12,en:"I understand the HICS command structure and know who to report to during an MCI",ar:"أفھم ھیكل قیادة HICS وأعرف إلى من أُعید تقاریر"},
+    {n:13,en:"I am confident in setting up treatment zones (T1–T4) during a hospital MCI",ar:"أثق بقدرتي على إنشاء مناطق العلاج (T1–T4)"},
+    {n:14,en:"I can deliver a complete and accurate SBAR report under the pressure of an MCI",ar:"أستطیع تقدیم تقریر SBAR كامل ودقیق تحت ضغط الحادثة"},
+    {n:15,en:"I am prepared to manage a T1 (Immediate) casualty as part of a resuscitation team",ar:"أنا مستعد لإدارة ضحیة T1 (فوریة) ضمن فریق الإنعاش"},
+    {n:16,en:"Overall, I feel confident and prepared to respond to a mass casualty incident at my hospital",ar:"بشكل عام، أشعر بالثقة والاستعداد للاستجابة للحادثة الجسیمة"}
+  ],
+  c3:[
+    {n:17,type:'radio',en:"Have you previously attended any formal Mass Casualty Incident training?",ar:"ھل حضرت سابقاً أي تدریب رسمي على الحوادث الجسیمة؟",opts:[{l:"A",en:"Yes — within the last 2 years",ar:"نعم — خلال السنتین الماضیتین"},{l:"B",en:"Yes — more than 2 years ago",ar:"نعم — قبل أكثر من سنتین"},{l:"C",en:"No — never",ar:"لا — لم أتلَّق أي تدریب"},{l:"D",en:"I am not sure",ar:"لست متأكداً"}]},
+    {n:18,type:'radio',en:"Have you ever been involved in a real Mass Casualty Incident or hospital disaster response?",ar:"ھل شاركت من قبل في حادثة جسیمة حقیقیة؟",opts:[{l:"A",en:"Yes",ar:"نعم"},{l:"B",en:"No",ar:"لا"}]},
+    {n:19,type:'checkbox',en:"What do you feel is the BIGGEST barrier to MCI preparedness at your hospital? (Select ONE)",ar:"ما الذي تعتقد أنھ أكبر عائق أمام الاستعداد للحوادث الجسیمة في مستشفاك؟",opts:[{l:"A",en:"Lack of regular training and drills",ar:"غیاب التدریب المنتظم والتمارین"},{l:"B",en:"Poor awareness of the hospital disaster plan",ar:"ضعف الوعي بخطة الكوارث المستشفویة"},{l:"C",en:"Insufficient staff numbers during an MCI",ar:"نقص أعداد الكوادر أثناء الحادثة"},{l:"D",en:"Lack of equipment and resources",ar:"نقص المعدات والموارد"},{l:"E",en:"Poor communication systems",ar:"ضعف أنظمة التواصل"},{l:"F",en:"Other (specify below)",ar:"أخرى (یُرجى التحدید أدناه)"}]},
+    {n:20,type:'textarea',en:"Is there anything else you would like to share about MCI preparedness at your hospital? (Optional)",ar:"ھل ھناك أي شيء آخر توّد مشاركتھ حول الاستعداد للحوادث الجسیمة في مستشفاك؟ (اختیاري)"}
+  ]
+};
+
+// ============================================================
+// SCORING ENGINE
+// ============================================================
+function scorePartA(){
+  let total=0;
+  const domainScores=DOMAINS_A.map(d=>{
+    let s=0;
+    d.qs.forEach(qn=>{ if(answers.A[qn]===ANSWER_KEY_A[qn]) s++; });
+    return{...d,score:s};
+  });
+  domainScores.forEach(d=>total+=d.score);
+  return{total,domainScores,max:30};
+}
+
+function scoreC1(){
+  let total=0;
+  for(let i=1;i<=8;i++){ if(answers.C[i]===ANSWER_KEY_C1[i]) total++; }
+  return{total,max:8};
+}
+
+function sumLikert(part,from,to){
+  let sum=0,count=0;
+  for(let i=from;i<=to;i++){ const v=answers[part][i]; if(v) {sum+=v;count++;} }
+  return{sum,count,max:to-from+1};
+}
+
+function getGrade(pct){
+  if(pct>=80) return{label:'Excellent',cls:'excellent',grade:'excellent'};
+  if(pct>=60) return{label:'Good',cls:'good',grade:'good'};
+  if(pct>=40) return{label:'Fair',cls:'fair',grade:'fair'};
+  return{label:'Needs Improvement',cls:'poor',grade:'poor'};
+}
+function getBarClass(pct){
+  if(pct>=80) return 'bar-green';
+  if(pct>=60) return 'bar-teal';
+  if(pct>=40) return 'bar-gold';
+  return 'bar-red';
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function renderPartA(){
+  let html='';let gN=1;
+  partAData.forEach(d=>{
+    html+=`<div class="domain-badge">🫀 ${d.domain} <span class="ar">— ${d.domainAr}</span></div>`;
+    d.qs.forEach(q=>{
+      html+=`<div class="q-card" id="qA${q.n}"><div class="q-number">Question ${gN} of 30</div>
+      <div class="q-text-en">${q.en}</div><div class="q-text-ar">${q.ar}</div><div class="options-list">`;
+      q.opts.forEach(o=>{
+        html+=`<label class="option-label" id="optA${q.n}${o.l}" onclick="selectMCQ('A',${q.n},'${o.l}')">
+        <input type="radio" name="qA${q.n}"/><span class="opt-letter">${o.l}</span>
+        <div class="opt-texts"><div class="opt-en">${o.en}</div><div class="opt-ar">${o.ar}</div></div></label>`;
+      });
+      html+=`</div></div>`;gN++;
+    });
+  });
+  document.getElementById('partAQuestions').innerHTML=html;updateProgA();
+}
+
+function renderPartB(){
+  let html='';let gN=1;
+  partBData.forEach(d=>{
+    html+=`<div class="domain-badge">⭐ ${d.domain} <span class="ar">— ${d.domainAr}</span></div>`;
+    d.qs.forEach(q=>{
+      html+=`<div class="q-card" id="qB${q.n}"><div class="q-number">Item ${gN} of 28</div>
+      <div class="q-text-en">${q.en}</div><div class="q-text-ar">${q.ar}</div>
+      <div class="likert-wrap">
+        <div class="likert-labels"><span>1 — Not at all confident / غیر واثق</span><span>5 — Completely confident / واثق تماماً</span></div>
+        <div class="likert-scale">${[1,2,3,4,5].map(v=>`<button class="likert-btn" id="likB${q.n}_${v}" onclick="selectLikert('B',${q.n},${v})">${v}</button>`).join('')}</div>
+      </div></div>`;gN++;
+    });
+  });
+  document.getElementById('partBQuestions').innerHTML=html;updateProgB();
+}
+
+function renderPartC(){
+  let html='';
+  html+=`<div class="domain-badge">🧠 Section C-1: MCI Knowledge <span class="ar">— المعرفة بالحوادث الجسیمة</span></div>`;
+  partCData.c1.forEach((q,i)=>{
+    html+=`<div class="q-card" id="qC${q.n}"><div class="q-number">Question ${i+1} of 8</div>
+    <div class="q-text-en">${q.en}</div><div class="q-text-ar">${q.ar}</div><div class="options-list">`;
+    q.opts.forEach(o=>{
+      html+=`<label class="option-label" id="optC${q.n}${o.l}" onclick="selectMCQ('C',${q.n},'${o.l}')">
+      <input type="radio" name="qC${q.n}"/><span class="opt-letter">${o.l}</span>
+      <div class="opt-texts"><div class="opt-en">${o.en}</div><div class="opt-ar">${o.ar}</div></div></label>`;
+    });
+    html+=`</div></div>`;
+  });
+  html+=`<div class="domain-badge">📊 Section C-2: Self-Rated MCI Preparedness <span class="ar">— تقدیر الاستعداد الذاتي</span></div>`;
+  html+=`<div class="section-instruction" style="margin-bottom:14px;">1 = Strongly Disagree → 5 = Strongly Agree &nbsp;|&nbsp; <span style="font-family:'Noto Sans Arabic',sans-serif;">١ = لا أوافق بشدة → ٥ = أوافق بشدة</span></div>`;
+  partCData.c2.forEach((q,i)=>{
+    html+=`<div class="q-card" id="qC${q.n}"><div class="q-number">Item ${i+1} of 8</div>
+    <div class="q-text-en">${q.en}</div><div class="q-text-ar">${q.ar}</div>
+    <div class="likert-wrap">
+      <div class="likert-labels"><span>1 — Strongly Disagree / لا أوافق بشدة</span><span>5 — Strongly Agree / أوافق بشدة</span></div>
+      <div class="likert-scale">${[1,2,3,4,5].map(v=>`<button class="likert-btn" id="likC${q.n}_${v}" onclick="selectLikert('C',${q.n},${v})">${v}</button>`).join('')}</div>
+    </div></div>`;
+  });
+  html+=`<div class="domain-badge">📋 Section C-3: Training Exposure & Barriers <span class="ar">— التدریب السابق والعوائق</span></div>`;
+  partCData.c3.forEach((q,i)=>{
+    html+=`<div class="q-card" id="qC${q.n}"><div class="q-number">Question ${i+1} of 4</div>
+    <div class="q-text-en">${q.en}</div><div class="q-text-ar">${q.ar}</div>`;
+    if(q.type==='radio'){
+      html+=`<div class="options-list">`;
+      q.opts.forEach(o=>{
+        html+=`<label class="option-label" id="optC${q.n}${o.l}" onclick="selectMCQ('C',${q.n},'${o.l}')">
+        <input type="radio" name="qC${q.n}"/><span class="opt-letter">${o.l}</span>
+        <div class="opt-texts"><div class="opt-en">${o.en}</div><div class="opt-ar">${o.ar}</div></div></label>`;
+      });
+      html+=`</div>`;
+    }else if(q.type==='checkbox'){
+      html+=`<div class="checkbox-list">`;
+      q.opts.forEach(o=>{
+        html+=`<label class="check-label" id="chkC${q.n}${o.l}" onclick="selectCheckbox(${q.n},'${o.l}')">
+        <input type="checkbox"/><div class="check-box" id="chkBox${q.n}${o.l}">✓</div>
+        <div class="opt-texts"><div class="opt-en">${o.en}</div><div class="opt-ar">${o.ar}</div></div></label>`;
+      });
+      html+=`</div>`;
+    }else if(q.type==='textarea'){
+      html+=`<textarea class="q-textarea" id="textC${q.n}" placeholder="Your answer here / إجابتك هنا" oninput="answers.C[${q.n}]=this.value;updateProgC()"></textarea>`;
+    }
+    html+=`</div>`;
+  });
+  document.getElementById('partCQuestions').innerHTML=html;updateProgC();
+}
+
+// ============================================================
+// INTERACTION
+// ============================================================
+function selectMCQ(part,qn,letter){
+  const prev=answers[part][qn];
+  if(prev){const pe=document.getElementById(`opt${part}${qn}${prev}`);if(pe)pe.classList.remove('selected');}
+  answers[part][qn]=letter;
+  const el=document.getElementById(`opt${part}${qn}${letter}`);if(el)el.classList.add('selected');
+  const card=document.getElementById(`q${part}${qn}`);if(card)card.classList.add('answered');
+  if(part==='A')updateProgA();
+  if(part==='C')updateProgC();
+}
+function selectLikert(part,qn,val){
+  for(let v=1;v<=5;v++){const b=document.getElementById(`lik${part}${qn}_${v}`);if(b)b.classList.remove('selected');}
+  answers[part][qn]=val;
+  const b=document.getElementById(`lik${part}${qn}_${val}`);if(b)b.classList.add('selected');
+  const card=document.getElementById(`q${part}${qn}`);if(card)card.classList.add('answered');
+  if(part==='B')updateProgB();
+  if(part==='C')updateProgC();
+}
+function selectCheckbox(qn,letter){
+  answers.C[qn]=[letter];
+  document.querySelectorAll(`[id^="chkC${qn}"]`).forEach(el=>el.classList.remove('selected'));
+  document.querySelectorAll(`[id^="chkBox${qn}"]`).forEach(el=>{el.style.color='transparent';});
+  const el=document.getElementById(`chkC${qn}${letter}`);if(el)el.classList.add('selected');
+  const box=document.getElementById(`chkBox${qn}${letter}`);if(box)box.style.color='white';
+  const card=document.getElementById(`qC${qn}`);if(card)card.classList.add('answered');
+  updateProgC();
+}
+
+// ============================================================
+// PROGRESS
+// ============================================================
+function countAnswered(part){
+  return Object.keys(answers[part]).filter(k=>{const v=answers[part][k];return v!==undefined&&v!==null&&v!==''&&!(Array.isArray(v)&&v.length===0);}).length;
+}
+function updateProgA(){document.getElementById('progA').textContent=countAnswered('A')+' / 30';updateBar();}
+function updateProgB(){document.getElementById('progB').textContent=countAnswered('B')+' / 28';updateBar();}
+function updateProgC(){document.getElementById('progC').textContent=countAnswered('C')+' / 20';updateBar();}
+function updateBar(){document.getElementById('progressBar').style.width=(countAnswered('A')+countAnswered('B')+countAnswered('C'))/78*100+'%';}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function showPage(id){
+  ['pageCover','pageA','pageB','pageC','pageResults'].forEach(p=>document.getElementById(p).classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function startAssessment(){renderPartA();showPage('pageA');}
+function goToPartB(){renderPartB();showPage('pageB');}
+function goToPartC(){renderPartC();showPage('pageC');}
+
+// ============================================================
+// SUBMIT
+// ============================================================
+async function submitAssessment(){
+  const code=document.getElementById('participantCode').value.trim()||'UNKNOWN';
+  const date=document.getElementById('assessmentDate').value||new Date().toISOString().split('T')[0];
+  const cat=document.getElementById('profCategory').value||'Not specified';
+
+  // Calculate scores
+  const scoreA=scorePartA();
+  const scoreC1res=scoreC1();
+  const totalKnowledge=scoreA.total+scoreC1res.total;
+  const maxKnowledge=38;
+  const pctKnowledge=Math.round(totalKnowledge/maxKnowledge*100);
+
+  // Likert sums
+  const bSum=sumLikert('B',1,28);
+  const c2Sum=sumLikert('C',9,16);
+
+  // Domain sub-scores as flat object
+  const domainScoreFlat={};
+  scoreA.domainScores.forEach((d,i)=>{ domainScoreFlat[`Score_D${i+1}`]=d.score; });
+
+  lastPayload={
+    testType,code,date,category:cat,
+    A:answers.A,B:answers.B,C:answers.C,
+    aAnswered:countAnswered('A'),bAnswered:countAnswered('B'),cAnswered:countAnswered('C'),
+    total:countAnswered('A')+countAnswered('B')+countAnswered('C'),
+    // Scores
+    scoreA_total:scoreA.total,scoreA_max:30,
+    scoreC1_total:scoreC1res.total,scoreC1_max:8,
+    totalKnowledge,maxKnowledge,pctKnowledge,
+    scoreB_sum:bSum.sum,scoreB_max:bSum.max*5,
+    scoreC2_sum:c2Sum.sum,scoreC2_max:c2Sum.max*5,
+    ...domainScoreFlat
+  };
+
+  document.getElementById('submitOverlay').classList.remove('hidden');
+  let success=true;
+  try{
+    await fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(lastPayload)});
+  }catch(e){success=false;}
+  document.getElementById('submitOverlay').classList.add('hidden');
+
+  buildResultsPage(scoreA,scoreC1res,totalKnowledge,maxKnowledge,pctKnowledge,bSum,c2Sum,success);
+}
+
+async function retrySend(){
+  if(!lastPayload)return;
+  document.getElementById('submitOverlay').classList.remove('hidden');
+  try{
+    await fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(lastPayload)});
+    document.getElementById('syncBadge').className='sync-badge ok';
+    document.getElementById('syncBadge').textContent='☁️ Saved to Google Sheets';
+    document.getElementById('retrySection').classList.add('hidden');
+  }catch(e){}
+  document.getElementById('submitOverlay').classList.add('hidden');
+}
+
+// ============================================================
+// BUILD RESULTS PAGE
+// ============================================================
+function buildResultsPage(scoreA,scoreC1res,totalKnowledge,maxKnowledge,pctKnowledge,bSum,c2Sum,success){
+  const grade=getGrade(pctKnowledge);
+
+  // Banner
+  document.getElementById('resultsBanner').className='results-banner '+(testType==='PRE'?'pre':'post');
+  document.getElementById('resultsTitle').textContent=testType+'-COURSE Assessment Results';
+  document.getElementById('resultsSubtitle').textContent='Scored automatically using the official IELS answer key';
+
+  // Score circle
+  const circle=document.getElementById('scoreCircle');
+  circle.className='score-circle '+grade.cls;
+  document.getElementById('scVal').textContent=totalKnowledge;
+  document.getElementById('scTotal').textContent='/ '+maxKnowledge;
+  document.getElementById('scPct').textContent=pctKnowledge+'%';
+  document.getElementById('scoreGrade').textContent=grade.label;
+  document.getElementById('scoreGrade').className='score-grade grade-'+grade.grade;
+
+  const msgs={
+    excellent:'Outstanding performance! You have demonstrated excellent knowledge across all domains.',
+    good:'Good performance. Review any incorrectly answered questions before the course begins.',
+    fair:'Satisfactory. Focus on the domains where you scored lower during the course.',
+    poor:'This assessment helps identify areas for improvement during the course. Don\'t worry!'
+  };
+  document.getElementById('scoreMsg').textContent=msgs[grade.grade];
+
+  // Participant info
+  const code=document.getElementById('participantCode').value.trim()||'UNKNOWN';
+  const date=document.getElementById('assessmentDate').value||'—';
+  const cat=document.getElementById('profCategory').value||'—';
+  document.getElementById('resultParticipantInfo').innerHTML=`
+    <strong>Participant Code:</strong> ${code} &nbsp;|&nbsp;
+    <strong>Date:</strong> ${date} &nbsp;|&nbsp;
+    <strong>Category:</strong> ${cat} &nbsp;|&nbsp;
+    <strong>Test Type:</strong> ${testType}<br>
+    <strong>Part A Score:</strong> ${scoreA.total}/30 &nbsp;|&nbsp;
+    <strong>C-1 Score:</strong> ${scoreC1res.total}/8 &nbsp;|&nbsp;
+    <strong>Total Knowledge:</strong> ${totalKnowledge}/38 (${pctKnowledge}%)
+  `;
+
+  // Sync badge
+  const badge=document.getElementById('syncBadge');
+  const retry=document.getElementById('retrySection');
+  if(success){badge.className='sync-badge ok';badge.textContent='☁️ Saved to Google Sheets';retry.classList.add('hidden');}
+  else{badge.className='sync-badge fail';badge.textContent='❌ Not saved — please retry';retry.classList.remove('hidden');}
+
+  // Domain table
+  let tbody='';
+  scoreA.domainScores.forEach(d=>{
+    const pct=Math.round(d.score/d.max*100);
+    const bc=getBarClass(pct);
+    tbody+=`<tr>
+      <td>${d.name}<br><small style="color:var(--gray-400);font-family:'Noto Sans Arabic',sans-serif;">${d.nameAr}</small></td>
+      <td><strong>${d.score}</strong></td><td>${d.max}</td><td>${pct}%</td>
+      <td><div class="bar-wrap"><div class="bar-fill ${bc}" style="width:${pct}%"></div></div></td>
+    </tr>`;
+  });
+  // C-1 row
+  const c1pct=Math.round(scoreC1res.total/8*100);
+  tbody+=`<tr>
+    <td>C-1: MCI Knowledge<br><small style="color:var(--gray-400);font-family:'Noto Sans Arabic',sans-serif;">المعرفة بالحوادث الجسیمة</small></td>
+    <td><strong>${scoreC1res.total}</strong></td><td>8</td><td>${c1pct}%</td>
+    <td><div class="bar-wrap"><div class="bar-fill ${getBarClass(c1pct)}" style="width:${c1pct}%"></div></div></td>
+  </tr>`;
+  // Total row
+  tbody+=`<tr style="font-weight:700;background:var(--navy);color:white;">
+    <td>TOTAL Knowledge Score</td><td>${totalKnowledge}</td><td>${maxKnowledge}</td><td>${pctKnowledge}%</td>
+    <td><div class="bar-wrap" style="background:rgba(255,255,255,.2)"><div class="bar-fill" style="width:${pctKnowledge}%;background:var(--gold)"></div></div></td>
+  </tr>`;
+  document.getElementById('domainTableBody').innerHTML=tbody;
+
+  // Likert summary
+  let ltbody='';
+  ltbody+=`<tr><td>Part B — Competence (28 items)</td><td>28</td><td>${bSum.sum}</td><td>140</td><td>Mean item = ${bSum.count>0?(bSum.sum/bSum.count).toFixed(2):'—'} / 5</td></tr>`;
+  ltbody+=`<tr><td>C-2 — MCI Preparedness (8 items)</td><td>8</td><td>${c2Sum.sum}</td><td>40</td><td>Mean item = ${c2Sum.count>0?(c2Sum.sum/c2Sum.count).toFixed(2):'—'} / 5</td></tr>`;
+  document.getElementById('likertSummaryBody').innerHTML=ltbody;
+
+  // Review answers
+  buildReview();
+
+  document.getElementById('progressBar').style.width='100%';
+  showPage('pageResults');
+}
+
+function buildReview(){
+  let html='<div style="margin-top:12px;">';
+
+  // Part A review
+  html+=`<div class="domain-badge" style="margin-top:0;">Part A — Knowledge Test</div>`;
+  partAData.forEach(d=>{
+    html+=`<p style="font-size:12px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.07em;margin:14px 0 8px;">${d.domain}</p>`;
+    d.qs.forEach(q=>{
+      const userAns=answers.A[q.n];
+      const correctAns=ANSWER_KEY_A[q.n];
+      const isCorrect=userAns===correctAns;
+      const isSkipped=!userAns;
+      const tag=isSkipped?`<span class="result-tag tag-skipped">Not answered</span>`:
+                 isCorrect?`<span class="result-tag tag-correct">✓ Correct</span>`:
+                           `<span class="result-tag tag-wrong">✗ Wrong</span>`;
+      html+=`<div class="q-card" style="margin-bottom:10px;padding:14px 18px;">
+        <div class="q-number" style="margin-bottom:6px;">Q${q.n} ${tag}</div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:10px;">${q.en}</div>
+        <div class="options-list">`;
+      q.opts.forEach(o=>{
+        let cls='option-label';
+        if(o.l===correctAns) cls+=' correct-ans';
+        else if(o.l===userAns&&!isCorrect) cls+=' wrong-ans';
+        html+=`<div class="${cls}" style="cursor:default;">
+          <span class="opt-letter">${o.l}</span>
+          <div class="opt-texts"><div class="opt-en">${o.en}${o.l===correctAns?' ✓':''}</div></div>
+        </div>`;
+      });
+      html+=`</div></div>`;
+    });
+  });
+
+  // C-1 review
+  html+=`<div class="domain-badge">Section C-1 — MCI Knowledge</div>`;
+  partCData.c1.forEach((q,i)=>{
+    const userAns=answers.C[q.n];
+    const correctAns=ANSWER_KEY_C1[q.n-0] || ANSWER_KEY_C1[i+1];
+    const isCorrect=userAns===correctAns;
+    const isSkipped=!userAns;
+    const tag=isSkipped?`<span class="result-tag tag-skipped">Not answered</span>`:
+               isCorrect?`<span class="result-tag tag-correct">✓ Correct</span>`:
+                         `<span class="result-tag tag-wrong">✗ Wrong</span>`;
+    html+=`<div class="q-card" style="margin-bottom:10px;padding:14px 18px;">
+      <div class="q-number" style="margin-bottom:6px;">C1-Q${i+1} ${tag}</div>
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px;">${q.en}</div>
+      <div class="options-list">`;
+    q.opts.forEach(o=>{
+      let cls='option-label';
+      if(o.l===correctAns) cls+=' correct-ans';
+      else if(o.l===userAns&&!isCorrect) cls+=' wrong-ans';
+      html+=`<div class="${cls}" style="cursor:default;">
+        <span class="opt-letter">${o.l}</span>
+        <div class="opt-texts"><div class="opt-en">${o.en}${o.l===correctAns?' ✓':''}</div></div>
+      </div>`;
+    });
+    html+=`</div></div>`;
+  });
+
+  html+='</div>';
+  document.getElementById('reviewContent').innerHTML=html;
+}
+
+function toggleReview(){
+  const c=document.getElementById('reviewContent');
+  const a=document.getElementById('reviewArrow');
+  const isOpen=c.classList.contains('open');
+  c.classList.toggle('open');
+  a.textContent=isOpen?'▼':'▲';
+}
+
+// Init
+document.getElementById('assessmentDate').value=new Date().toISOString().split('T')[0];
+</script>
+</body>
+</html>
