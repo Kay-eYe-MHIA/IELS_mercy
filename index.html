@@ -230,7 +230,7 @@
       <div class="header-title">IELS Participant Assessment</div>
       <div class="header-sub">استبیان المشاركین — دورة الإسعافات الطارئة المتكاملة</div>
     </div>
-    <div class="header-badge" id="headerBadge">PRE-TEST</div>
+    <div class="header-badge" id="headerBadge">POST-TEST</div>
   </div>
   <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
 </div>
@@ -240,26 +240,26 @@
 <!-- ===== COVER ===== -->
 <div id="pageCover" class="cover">
   <div class="cover-banner">
-    <div class="cover-badge" id="coverBadge">PRE-COURSE · قبل الدورة</div>
+    <div class="cover-badge" id="coverBadge">POST-COURSE · بعد الدورة</div>
     <div class="cover-title-en">IELS Participant Assessment</div>
     <div class="cover-title-ar">استبیان المشاركین — دورة الإسعافات الطارئة المتكاملة</div>
     <div class="cover-divider"></div>
-    <div style="font-size:13px;color:rgba(255,255,255,.7);">Instruments A (Knowledge) + B (Competence) + C (MCI Preparedness)<br>
-    <span style="font-family:'Noto Sans Arabic',sans-serif;">الأداة أ (المعرفة) + ب (الكفاءة) + ج (الاستعداد للحوادث الجسیمة)</span></div>
+    <div style="font-size:13px;color:rgba(255,255,255,.7);">Instruments A (Knowledge) + B (Competence) — Post-Course<br>
+    <span style="font-family:'Noto Sans Arabic',sans-serif;">الأداة أ (المعرفة) + ب (الكفاءة) — ما بعد الدورة</span></div>
   </div>
   <div class="cover-body">
     <div style="margin-bottom:8px;font-size:12px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.08em;">Test Type / نوع الاختبار</div>
     <div class="test-type-row">
-      <button class="test-type-btn active-pre" id="btnPre" onclick="setTestType('PRE')">
+      <button class="test-type-btn disabled" id="btnPre" disabled title="Pre-test closed">
         <span class="tb-icon">📋</span><div class="tb-label">Pre-Course Test</div><div class="tb-ar">اختبار ما قبل الدورة</div>
+        <div class="coming-soon-tag">🔒 PRE-TEST CLOSED</div>
       </button>
-      <button class="test-type-btn disabled" id="btnPost" disabled title="Available after the course">
+      <button class="test-type-btn active-post" id="btnPost" onclick="setTestType('POST')">
         <span class="tb-icon">🎓</span><div class="tb-label">Post-Course Test</div><div class="tb-ar">اختبار ما بعد الدورة</div>
-        <div class="coming-soon-tag">🔒 AVAILABLE AFTER COURSE</div>
       </button>
     </div>
     <div class="cover-info-grid">
-      <div class="cover-field"><label>Participant Code / رمز المشارك</label><input type="text" id="participantCode" placeholder="e.g. JR1985" maxlength="20"/></div>
+      <div class="cover-field"><label>Participant Name / اسم المشارك</label><input type="text" id="participantCode" placeholder="Full name / الاسم الكامل" maxlength="80"/></div>
       <div class="cover-field"><label>Date / التاریخ</label><input type="date" id="assessmentDate"/></div>
       <div class="cover-field" style="grid-column:1/-1"><label>Professional Category / الفئة المھنیة</label>
         <select id="profCategory">
@@ -314,7 +314,7 @@
   <div class="nav-row">
     <button class="btn-back" onclick="showPage('pageA')">← Back</button>
     <div class="progress-text" id="progB">0 / 28</div>
-    <button class="btn-next" onclick="goToPartC()">Next: Part C →</button>
+    <button class="btn-next" id="btnBNext" onclick="partBNext()">Next: Part C →</button>
   </div>
 </div>
 
@@ -449,7 +449,7 @@ const DOMAINS_A = [
 // STATE
 // ============================================================
 const answers = {A:{},B:{},C:{}};
-let testType = 'PRE';
+let testType = 'POST';
 let lastPayload = null;
 
 // ============================================================
@@ -457,8 +457,6 @@ let lastPayload = null;
 // ============================================================
 function setTestType(t){
   testType=t;
-  document.getElementById('btnPre').className='test-type-btn'+(t==='PRE'?' active-pre':'');
-  document.getElementById('btnPost').className='test-type-btn'+(t==='POST'?' active-post':'');
   document.getElementById('headerBadge').textContent=t+'-TEST';
   document.getElementById('coverBadge').textContent=t==='PRE'?'PRE-COURSE · قبل الدورة':'POST-COURSE · بعد الدورة';
 }
@@ -741,7 +739,13 @@ function countAnswered(part){
 function updateProgA(){document.getElementById('progA').textContent=countAnswered('A')+' / 30';updateBar();}
 function updateProgB(){document.getElementById('progB').textContent=countAnswered('B')+' / 28';updateBar();}
 function updateProgC(){document.getElementById('progC').textContent=countAnswered('C')+' / 20';updateBar();}
-function updateBar(){document.getElementById('progressBar').style.width=(countAnswered('A')+countAnswered('B')+countAnswered('C'))/78*100+'%';}
+function updateBar(){
+  const total = testType==='POST'
+    ? countAnswered('A')+countAnswered('B')
+    : countAnswered('A')+countAnswered('B')+countAnswered('C');
+  const max = testType==='POST' ? 58 : 78;
+  document.getElementById('progressBar').style.width=(total/max*100)+'%';
+}
 
 // ============================================================
 // NAVIGATION
@@ -751,7 +755,15 @@ function showPage(id){
   document.getElementById(id).classList.remove('hidden');
   window.scrollTo({top:0,behavior:'smooth'});
 }
-function startAssessment(){renderPartA();showPage('pageA');}
+function startAssessment(){
+  // Update Part B button label based on test type
+  document.getElementById('btnBNext').textContent = testType==='POST' ? 'Submit & Save ✓' : 'Next: Part C →';
+  renderPartA();showPage('pageA');
+}
+function partBNext(){
+  if(testType==='POST') submitAssessment();
+  else { goToPartC(); }
+}
 function goToPartB(){renderPartB();showPage('pageB');}
 function goToPartC(){renderPartC();showPage('pageC');}
 
@@ -766,8 +778,9 @@ async function submitAssessment(){
   // Calculate scores
   const scoreA=scorePartA();
   const scoreC1res=scoreC1();
-  const totalKnowledge=scoreA.total+scoreC1res.total;
-  const maxKnowledge=38;
+  const isPost = testType==='POST';
+  const totalKnowledge = isPost ? scoreA.total : scoreA.total+scoreC1res.total;
+  const maxKnowledge   = isPost ? 30 : 38;
   const pctKnowledge=Math.round(totalKnowledge/maxKnowledge*100);
 
   // Likert sums
@@ -779,7 +792,7 @@ async function submitAssessment(){
   scoreA.domainScores.forEach((d,i)=>{ domainScoreFlat[`Score_D${i+1}`]=d.score; });
 
   lastPayload={
-    testType,code,date,category:cat,
+    testType,code,participantName:code,date,category:cat,
     A:answers.A,B:answers.B,C:answers.C,
     aAnswered:countAnswered('A'),bAnswered:countAnswered('B'),cAnswered:countAnswered('C'),
     total:countAnswered('A')+countAnswered('B')+countAnswered('C'),
@@ -827,18 +840,21 @@ function buildResultsPage(scoreA,scoreC1res,totalKnowledge,maxKnowledge,pctKnowl
 
   // Score circle
   const circle=document.getElementById('scoreCircle');
+  const isPost=testType==='POST';
   circle.className='score-circle '+grade.cls;
   document.getElementById('scVal').textContent=totalKnowledge;
   document.getElementById('scTotal').textContent='/ '+maxKnowledge;
   document.getElementById('scPct').textContent=pctKnowledge+'%';
   document.getElementById('scoreGrade').textContent=grade.label;
   document.getElementById('scoreGrade').className='score-grade grade-'+grade.grade;
+  document.querySelector('#scoreHero .score-meta h3').textContent=
+    isPost?'Knowledge Score (Part A — 30 marks)':'Knowledge Score (Part A + C-1 — 38 marks)';
 
   const msgs={
-    excellent:'Outstanding performance! You have demonstrated excellent knowledge across all domains.',
-    good:'Good performance. Review any incorrectly answered questions before the course begins.',
-    fair:'Satisfactory. Focus on the domains where you scored lower during the course.',
-    poor:'This assessment helps identify areas for improvement during the course. Don\'t worry!'
+    excellent: isPost?'Excellent! Great improvement after the course. Well done!':'Outstanding pre-course knowledge across all domains.',
+    good:      isPost?'Good post-course performance. Keep reinforcing your learning.':'Good baseline. Some areas to develop during the course.',
+    fair:      isPost?'Satisfactory. Review the domains where you scored lower.':'Satisfactory. Focus on the lower-scoring domains during the course.',
+    poor:      isPost?'Keep studying — use the course materials to reinforce your knowledge.':'This helps identify areas for learning. Don\'t worry!'
   };
   document.getElementById('scoreMsg').textContent=msgs[grade.grade];
 
@@ -847,13 +863,13 @@ function buildResultsPage(scoreA,scoreC1res,totalKnowledge,maxKnowledge,pctKnowl
   const date=document.getElementById('assessmentDate').value||'—';
   const cat=document.getElementById('profCategory').value||'—';
   document.getElementById('resultParticipantInfo').innerHTML=`
-    <strong>Participant Code:</strong> ${code} &nbsp;|&nbsp;
+    <strong>Participant Name:</strong> ${code} &nbsp;|&nbsp;
     <strong>Date:</strong> ${date} &nbsp;|&nbsp;
     <strong>Category:</strong> ${cat} &nbsp;|&nbsp;
     <strong>Test Type:</strong> ${testType}<br>
     <strong>Part A Score:</strong> ${scoreA.total}/30 &nbsp;|&nbsp;
-    <strong>C-1 Score:</strong> ${scoreC1res.total}/8 &nbsp;|&nbsp;
-    <strong>Total Knowledge:</strong> ${totalKnowledge}/38 (${pctKnowledge}%)
+    <strong>C-1 Score:</strong> ${testType==='POST'?'N/A (Post-test)':scoreC1res.total+'/8'} &nbsp;|&nbsp;
+    <strong>Total Knowledge:</strong> ${totalKnowledge}/${testType==='POST'?30:38} (${pctKnowledge}%)
   `;
 
   // Sync badge
@@ -873,13 +889,15 @@ function buildResultsPage(scoreA,scoreC1res,totalKnowledge,maxKnowledge,pctKnowl
       <td><div class="bar-wrap"><div class="bar-fill ${bc}" style="width:${pct}%"></div></div></td>
     </tr>`;
   });
-  // C-1 row
-  const c1pct=Math.round(scoreC1res.total/8*100);
-  tbody+=`<tr>
-    <td>C-1: MCI Knowledge<br><small style="color:var(--gray-400);font-family:'Noto Sans Arabic',sans-serif;">المعرفة بالحوادث الجسیمة</small></td>
-    <td><strong>${scoreC1res.total}</strong></td><td>8</td><td>${c1pct}%</td>
-    <td><div class="bar-wrap"><div class="bar-fill ${getBarClass(c1pct)}" style="width:${c1pct}%"></div></div></td>
-  </tr>`;
+  // C-1 row — only for pre-test
+  if(!isPost){
+    const c1pct=Math.round(scoreC1res.total/8*100);
+    tbody+=`<tr>
+      <td>C-1: MCI Knowledge<br><small style="color:var(--gray-400);font-family:'Noto Sans Arabic',sans-serif;">المعرفة بالحوادث الجسیمة</small></td>
+      <td><strong>${scoreC1res.total}</strong></td><td>8</td><td>${c1pct}%</td>
+      <td><div class="bar-wrap"><div class="bar-fill ${getBarClass(c1pct)}" style="width:${c1pct}%"></div></div></td>
+    </tr>`;
+  }
   // Total row
   tbody+=`<tr style="font-weight:700;background:var(--navy);color:white;">
     <td>TOTAL Knowledge Score</td><td>${totalKnowledge}</td><td>${maxKnowledge}</td><td>${pctKnowledge}%</td>
@@ -890,7 +908,9 @@ function buildResultsPage(scoreA,scoreC1res,totalKnowledge,maxKnowledge,pctKnowl
   // Likert summary
   let ltbody='';
   ltbody+=`<tr><td>Part B — Competence (28 items)</td><td>28</td><td>${bSum.sum}</td><td>140</td><td>Mean item = ${bSum.count>0?(bSum.sum/bSum.count).toFixed(2):'—'} / 5</td></tr>`;
-  ltbody+=`<tr><td>C-2 — MCI Preparedness (8 items)</td><td>8</td><td>${c2Sum.sum}</td><td>40</td><td>Mean item = ${c2Sum.count>0?(c2Sum.sum/c2Sum.count).toFixed(2):'—'} / 5</td></tr>`;
+  if(!isPost){
+    ltbody+=`<tr><td>C-2 — MCI Preparedness (8 items)</td><td>8</td><td>${c2Sum.sum}</td><td>40</td><td>Mean item = ${c2Sum.count>0?(c2Sum.sum/c2Sum.count).toFixed(2):'—'} / 5</td></tr>`;
+  }
   document.getElementById('likertSummaryBody').innerHTML=ltbody;
 
   // Review answers
@@ -972,6 +992,8 @@ function toggleReview(){
 
 // Init
 document.getElementById('assessmentDate').value=new Date().toISOString().split('T')[0];
+// Default: POST test active
+setTestType('POST');
 </script>
 </body>
 </html>
