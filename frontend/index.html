@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Stock Breakout Predictor</title>
+<style>
+  :root {
+    --bg:#0f1420; --panel:#171d2e; --panel-2:#1e2536; --border:#2a3350;
+    --text:#e8ecf7; --muted:#8b93ac; --accent:#4f8cff; --green:#28c789; --red:#ff5d6c;
+    --radius:14px;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg:#f4f6fb; --panel:#ffffff; --panel-2:#f0f2f8; --border:#e1e5f0;
+      --text:#151a28; --muted:#5b6478; --accent:#2f6fed; --green:#0f9d63; --red:#d8384a;
+    }
+  }
+  * { box-sizing:border-box; }
+  body {
+    margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased;
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  header {
+    position:sticky; top:0; z-index:10; background:var(--bg);
+    padding:18px 16px 10px; border-bottom:1px solid var(--border);
+  }
+  header h1 { font-size:18px; margin:0 0 2px; }
+  header p { margin:0; font-size:12px; color:var(--muted); }
+  main { max-width:560px; margin:0 auto; padding:16px; }
+
+  .card { background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:14px; }
+  .card h2 { font-size:13px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:0 0 12px; }
+
+  label { display:block; font-size:12px; color:var(--muted); margin:10px 0 4px; }
+  label:first-child { margin-top:0; }
+  input, select {
+    width:100%; padding:11px 12px; border-radius:9px; border:1px solid var(--border);
+    background:var(--panel-2); color:var(--text); font-size:15px; outline:none;
+  }
+  input:focus, select:focus { border-color:var(--accent); }
+  .row { display:flex; gap:10px; }
+  .row > * { flex:1; }
+  details summary { cursor:pointer; font-size:13px; color:var(--accent); margin-top:12px; user-select:none; }
+  details[open] summary { margin-bottom:6px; }
+
+  button {
+    width:100%; padding:14px; border:none; border-radius:9px; background:var(--accent);
+    color:white; font-size:15px; font-weight:600; cursor:pointer; margin-top:14px;
+  }
+  button:disabled { opacity:.55; }
+  button.secondary { background:var(--panel-2); color:var(--text); border:1px solid var(--border); }
+
+  .status { font-size:13px; color:var(--muted); margin-top:10px; text-align:center; }
+  .error { background:rgba(255,93,108,.12); border:1px solid var(--red); color:var(--red); border-radius:9px; padding:12px; font-size:13px; margin-top:12px; }
+
+  .stat-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+  .stat { background:var(--panel-2); border-radius:10px; padding:10px 12px; }
+  .stat .k { font-size:11px; color:var(--muted); }
+  .stat .v { font-size:17px; font-weight:700; margin-top:2px; }
+  .v.pos { color:var(--green); } .v.neg { color:var(--red); }
+
+  .tablewrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  table { border-collapse:collapse; width:100%; font-size:12.5px; white-space:nowrap; }
+  th, td { padding:7px 9px; text-align:right; border-bottom:1px solid var(--border); }
+  th:first-child, td:first-child { text-align:left; }
+  th { color:var(--muted); font-weight:600; }
+
+  canvas { width:100%; height:120px; display:block; }
+  .hidden { display:none; }
+  footer { text-align:center; color:var(--muted); font-size:11px; padding:20px 16px 30px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Stock Breakout Predictor</h1>
+  <p>Walk-forward XGBoost breakout signal + ATR stop-loss, run from your phone</p>
+</header>
+
+<main>
+
+  <div class="card">
+    <h2>Backend</h2>
+    <label for="apiUrl">API URL (your Render backend)</label>
+    <input id="apiUrl" placeholder="https://your-app.onrender.com" autocomplete="off" autocapitalize="off" />
+  </div>
+
+  <div class="card">
+    <h2>Analysis</h2>
+
+    <label for="symbol">Symbol</label>
+    <input id="symbol" value="AAPL" autocomplete="off" autocapitalize="off" />
+
+    <label for="source">Data source</label>
+    <select id="source">
+      <option value="synthetic">Demo (synthetic, no network needed)</option>
+      <option value="yfinance" selected>Yahoo Finance (free, .KL for Bursa)</option>
+      <option value="eodhd">EODHD (needs API key, .KLSE for Bursa)</option>
+    </select>
+
+    <div id="apiKeyRow" class="hidden">
+      <label for="apiKey">EODHD API key</label>
+      <input id="apiKey" type="password" autocomplete="off" />
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="start">Start date</label>
+        <input id="start" type="date" value="2015-01-01" />
+      </div>
+      <div>
+        <label for="end">End date (optional)</label>
+        <input id="end" type="date" />
+      </div>
+    </div>
+
+    <details>
+      <summary>Advanced settings</summary>
+      <div class="row">
+        <div>
+          <label for="horizon">Breakout horizon (days)</label>
+          <input id="horizon" type="number" value="5" min="1" max="60" />
+        </div>
+        <div>
+          <label for="margin">Breakout margin</label>
+          <input id="margin" type="number" value="0.02" step="0.01" min="0" max="1" />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="threshold">Signal probability threshold</label>
+          <input id="threshold" type="number" value="0.6" step="0.05" min="0" max="1" />
+        </div>
+        <div>
+          <label for="splits">Walk-forward folds</label>
+          <input id="splits" type="number" value="5" min="2" max="20" />
+        </div>
+      </div>
+    </details>
+
+    <button id="runBtn">Run analysis</button>
+    <div id="status" class="status hidden"></div>
+    <div id="error" class="error hidden"></div>
+  </div>
+
+  <div id="results" class="hidden">
+
+    <div class="card">
+      <h2>Overview</h2>
+      <div class="stat-grid">
+        <div class="stat"><div class="k">Symbol</div><div class="v" id="rSymbol">-</div></div>
+        <div class="stat"><div class="k">Rows used</div><div class="v" id="rRows">-</div></div>
+        <div class="stat"><div class="k">Date range</div><div class="v" id="rRange" style="font-size:13px">-</div></div>
+        <div class="stat"><div class="k">Breakout rate</div><div class="v" id="rPosRate">-</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Backtest (out-of-sample)</h2>
+      <div class="stat-grid">
+        <div class="stat"><div class="k">Trades</div><div class="v" id="bTrades">-</div></div>
+        <div class="stat"><div class="k">Win rate</div><div class="v" id="bWinRate">-</div></div>
+        <div class="stat"><div class="k">Profit factor</div><div class="v" id="bProfitFactor">-</div></div>
+        <div class="stat"><div class="k">Total P&amp;L</div><div class="v" id="bPnl">-</div></div>
+        <div class="stat"><div class="k">Max drawdown</div><div class="v" id="bDrawdown">-</div></div>
+        <div class="stat"><div class="k">Avg return / trade</div><div class="v" id="bAvgReturn">-</div></div>
+      </div>
+      <canvas id="equityChart"></canvas>
+      <div style="font-size:11px;color:var(--muted);margin-top:6px;">
+        Exit mix: <span id="bExitMix">-</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Walk-forward classifier folds</h2>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Fold</th><th>Acc</th><th>Prec</th><th>Recall</th><th>ROC-AUC</th><th>n</th></tr></thead>
+          <tbody id="foldRows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Recent trades</h2>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Entry</th><th>Exit</th><th>Reason</th><th>Return</th></tr></thead>
+          <tbody id="tradeRows"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<footer>Decision-support baseline, not financial advice. Backtests do not include slippage/costs.</footer>
+
+<script>
+const $ = (id) => document.getElementById(id);
+
+// Persist backend URL across visits.
+$('apiUrl').value = localStorage.getItem('spb_api_url') || '';
+$('apiUrl').addEventListener('change', () => localStorage.setItem('spb_api_url', $('apiUrl').value.trim()));
+
+$('source').addEventListener('change', () => {
+  $('apiKeyRow').classList.toggle('hidden', $('source').value !== 'eodhd');
+});
+
+function fmtPct(x, digits = 1) {
+  return x === null || x === undefined || Number.isNaN(x) ? '-' : (x * 100).toFixed(digits) + '%';
+}
+function fmtNum(x, digits = 2) {
+  return x === null || x === undefined || Number.isNaN(x) ? '-' : Number(x).toFixed(digits);
+}
+function fmtMoney(x) {
+  if (x === null || x === undefined || Number.isNaN(x)) return '-';
+  const sign = x < 0 ? '-' : '';
+  return sign + '$' + Math.abs(x).toFixed(2);
+}
+
+function drawEquityCurve(trades) {
+  const canvas = $('equityChart');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.clientWidth, h = canvas.clientHeight || 120;
+  canvas.width = w * dpr; canvas.height = h * dpr;
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, w, h);
+
+  if (!trades.length) return;
+  let cum = 0;
+  const points = trades.map(t => (cum += t.pnl));
+  const min = Math.min(0, ...points), max = Math.max(0, ...points);
+  const range = (max - min) || 1;
+  const x = (i) => (i / (points.length - 1 || 1)) * (w - 8) + 4;
+  const y = (v) => h - 4 - ((v - min) / range) * (h - 8);
+
+  const styles = getComputedStyle(document.documentElement);
+  ctx.strokeStyle = points[points.length - 1] >= 0 ? styles.getPropertyValue('--green') : styles.getPropertyValue('--red');
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  points.forEach((v, i) => i === 0 ? ctx.moveTo(x(i), y(v)) : ctx.lineTo(x(i), y(v)));
+  ctx.stroke();
+
+  ctx.strokeStyle = styles.getPropertyValue('--border');
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(0, y(0)); ctx.lineTo(w, y(0));
+  ctx.stroke();
+}
+
+async function runAnalysis() {
+  const apiUrl = $('apiUrl').value.trim().replace(/\/+$/, '');
+  const errBox = $('error'), statusBox = $('status'), btn = $('runBtn');
+  errBox.classList.add('hidden');
+  $('results').classList.add('hidden');
+
+  if (!apiUrl) {
+    errBox.textContent = 'Set your backend API URL above first (your deployed Render URL).';
+    errBox.classList.remove('hidden');
+    return;
+  }
+
+  const payload = {
+    symbol: $('symbol').value.trim() || 'AAPL',
+    source: $('source').value,
+    api_key: $('apiKey').value || null,
+    start: $('start').value || '2015-01-01',
+    end: $('end').value || null,
+    horizon: parseInt($('horizon').value, 10),
+    breakout_margin: parseFloat($('margin').value),
+    proba_threshold: parseFloat($('threshold').value),
+    n_splits: parseInt($('splits').value, 10),
+  };
+
+  btn.disabled = true;
+  statusBox.textContent = 'Running walk-forward analysis... (first request after idle can take up to a minute on a free backend)';
+  statusBox.classList.remove('hidden');
+
+  try {
+    const res = await fetch(`${apiUrl}/api/analyze`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const body = await res.json();
+    if (!res.ok) throw new Error(body.detail || `Request failed (${res.status})`);
+    renderResults(body);
+  } catch (e) {
+    errBox.textContent = e.message || String(e);
+    errBox.classList.remove('hidden');
+  } finally {
+    btn.disabled = false;
+    statusBox.classList.add('hidden');
+  }
+}
+
+function renderResults(data) {
+  $('rSymbol').textContent = data.symbol;
+  $('rRows').textContent = data.dataset_rows;
+  $('rRange').textContent = data.date_range.join(' → ');
+  $('rPosRate').textContent = fmtPct(data.positive_rate);
+
+  const b = data.backtest_metrics || {};
+  $('bTrades').textContent = b.n_trades ?? 0;
+  $('bWinRate').textContent = fmtPct(b.win_rate);
+  $('bProfitFactor').textContent = fmtNum(b.profit_factor);
+  const pnlEl = $('bPnl');
+  pnlEl.textContent = fmtMoney(b.total_pnl);
+  pnlEl.className = 'v ' + (b.total_pnl >= 0 ? 'pos' : 'neg');
+  $('bDrawdown').textContent = fmtMoney(b.max_drawdown);
+  $('bAvgReturn').textContent = fmtPct(b.avg_return_pct);
+  $('bExitMix').textContent =
+    `stop-loss ${fmtPct(b.stop_loss_exits, 0)} · take-profit ${fmtPct(b.take_profit_exits, 0)} · time ${fmtPct(b.time_exits, 0)}`;
+
+  $('foldRows').innerHTML = (data.fold_metrics || []).map(f => `
+    <tr>
+      <td>${f.fold.replace('fold_', '#')}</td>
+      <td>${fmtPct(f.accuracy, 0)}</td>
+      <td>${fmtPct(f.precision, 0)}</td>
+      <td>${fmtPct(f.recall, 0)}</td>
+      <td>${fmtNum(f.roc_auc)}</td>
+      <td>${f.n_test}</td>
+    </tr>`).join('');
+
+  const trades = data.trades || [];
+  $('tradeRows').innerHTML = trades.slice().reverse().map(t => `
+    <tr>
+      <td>${t.entry_date}</td>
+      <td>${t.exit_date}</td>
+      <td>${t.exit_reason.replace('_', ' ')}</td>
+      <td class="${t.return_pct >= 0 ? '' : ''}" style="color:${t.return_pct >= 0 ? 'var(--green)' : 'var(--red)'}">${fmtPct(t.return_pct)}</td>
+    </tr>`).join('') || '<tr><td colspan="4" style="color:var(--muted)">No trades triggered at this threshold.</td></tr>';
+
+  $('results').classList.remove('hidden');
+  drawEquityCurve(trades);
+  $('results').scrollIntoView({ behavior: 'smooth' });
+}
+
+$('runBtn').addEventListener('click', runAnalysis);
+</script>
+</body>
+</html>
