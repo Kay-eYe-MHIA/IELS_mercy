@@ -45,12 +45,32 @@ pip install -r ../requirements.txt
 # Offline smoke test, no network required
 python -m stock_predictor.cli --synthetic
 
-# Real data via yfinance
+# Real data via yfinance (free, no key) — Bursa Malaysia uses the .KL suffix
 python -m stock_predictor.cli --symbol AAPL --start 2015-01-01
+python -m stock_predictor.cli --symbol 4456.KL --start 2015-01-01   # DNEX
+
+# Real data via EODHD (needs an API key, Bursa uses the .KLSE suffix)
+python -m stock_predictor.cli --symbol 4456.KLSE --source eodhd \
+    --api-key YOUR_KEY --start 2015-01-01
+# or: export EODHD_API_KEY=YOUR_KEY
 
 # From a local CSV (columns: date, open, high, low, close, volume)
 python -m stock_predictor.cli --csv my_data.csv --out trades.csv
 ```
+
+### Data sources: yfinance vs. EODHD
+
+- **yfinance** (default): free, no signup, good enough for large-cap
+  counters. Ticker suffix for Bursa Malaysia is `.KL` (e.g. `4456.KL` for
+  DNEX).
+- **EODHD**: official, ToS-compliant API with real Bursa Malaysia coverage
+  (a free tier is available at eodhd.com); more reliable for smaller/less
+  liquid counters where Yahoo's data can have gaps. Ticker suffix is
+  `.KLSE` (e.g. `4456.KLSE`).
+- **Not TradingView**: it has no public historical-data API. The packages
+  that pull from it scrape TradingView's private websocket feed, which is
+  against their Terms of Service and can break without notice — not used
+  here.
 
 Key tunables (see `config.py` for the full list): `--horizon` (days ahead
 the breakout must occur), `--breakout-margin` (how far past the N-day high

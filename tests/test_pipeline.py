@@ -1,6 +1,10 @@
 """Offline smoke tests for the data -> features -> model -> backtest pipeline.
 Uses synthetic OHLCV data so it runs without network access."""
 
+from unittest.mock import Mock, patch
+
+import pytest
+
 from stock_predictor import backtest, data, model
 from stock_predictor.config import Config
 from stock_predictor.features import build_dataset
@@ -32,6 +36,31 @@ def test_walk_forward_no_lookahead():
     cfg, df, X, y, meta = _small_dataset()
     for train_idx, test_idx in model.walk_forward_splits(len(X), cfg):
         assert train_idx.max() < test_idx.min()
+
+
+def test_eodhd_requires_api_key():
+    with pytest.raises(ValueError, match="API key"):
+        data.fetch_ohlcv_eodhd("4456.KLSE", "2015-01-01", api_key=None)
+
+
+def test_eodhd_parses_response():
+    fake_records = [
+        {"date": "2024-01-02", "open": 1.0, "high": 1.05, "low": 0.98, "close": 1.02,
+         "adjusted_close": 1.02, "volume": 1_000_000},
+        {"date": "2024-01-03", "open": 1.02, "high": 1.10, "low": 1.01, "close": 1.08,
+         "adjusted_close": 1.08, "volume": 1_200_000},
+    ]
+    mock_resp = Mock()
+    mock_resp.json.return_value = fake_records
+    mock_resp.raise_for_status.return_value = None
+
+    with patch("requests.get", return_value=mock_resp) as mock_get:
+        df = data.fetch_ohlcv_eodhd("4456.KLSE", "2024-01-01", api_key="fake-key")
+
+    assert mock_get.call_args.kwargs["params"]["api_token"] == "fake-key"
+    assert list(df.columns) == data.REQUIRED_COLUMNS
+    assert len(df) == 2
+    assert df.iloc[-1]["close"] == 1.08
 
 
 def test_train_and_backtest_smoke():

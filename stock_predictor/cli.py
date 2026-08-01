@@ -22,6 +22,10 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--symbol", default="AAPL")
     p.add_argument("--start", default="2015-01-01")
     p.add_argument("--end", default=None)
+    p.add_argument("--source", choices=["yfinance", "eodhd"], default="yfinance",
+                    help="Data provider: 'yfinance' (free, .KL Bursa suffix) or "
+                         "'eodhd' (needs --api-key/EODHD_API_KEY, .KLSE Bursa suffix)")
+    p.add_argument("--api-key", default=None, help="API key for --source eodhd (or set EODHD_API_KEY)")
     p.add_argument("--csv", default=None, help="Load OHLCV from a local CSV instead of downloading")
     p.add_argument("--synthetic", action="store_true", help="Use generated synthetic data (offline smoke test)")
     p.add_argument("--horizon", type=int, default=None)
@@ -49,7 +53,7 @@ def main():
     elif args.csv:
         df = data.load_csv(args.csv)
     else:
-        df = data.fetch_ohlcv(cfg.symbol, cfg.start, cfg.end)
+        df = data.fetch(cfg.symbol, cfg.start, cfg.end, source=args.source, api_key=args.api_key)
 
     print(f"Loaded {len(df)} rows from {df.index.min().date()} to {df.index.max().date()}")
 

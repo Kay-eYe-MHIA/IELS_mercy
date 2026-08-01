@@ -1,5 +1,9 @@
-"""OHLCV data loading. Prefers a live yfinance download; falls back to a
-local CSV so the pipeline runs in offline/sandboxed environments too."""
+"""OHLCV data loading. Supports yfinance (free, no key, `.KL` Bursa suffix)
+and EODHD (paid/freemium, needs an API key, `.KLSE` Bursa suffix, official
+ToS-compliant API — unlike scraping TradingView's private feed). Falls back
+to a local CSV or synthetic data so the pipeline runs offline too."""
+
+import os
 
 import pandas as pd
 
@@ -22,13 +26,57 @@ def _standardize(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def fetch_ohlcv(symbol: str, start: str, end: str | None = None) -> pd.DataFrame:
-    """Download daily OHLCV data for `symbol` via yfinance."""
+    """Download daily OHLCV data for `symbol` via yfinance.
+    Bursa Malaysia tickers use the `.KL` suffix, e.g. "4456.KL" for DNEX."""
     import yfinance as yf
 
     df = yf.download(symbol, start=start, end=end, auto_adjust=True, progress=False)
     if df.empty:
         raise ValueError(f"No data returned for symbol '{symbol}'")
     return _standardize(df)
+
+
+def fetch_ohlcv_eodhd(symbol: str, start: str, end: str | None = None, api_key: str | None = None) -> pd.DataFrame:
+    """Download daily OHLCV data for `symbol` from EODHD (https://eodhd.com),
+    an official, ToS-compliant data API with real Bursa Malaysia coverage.
+
+    Requires an API key: pass `api_key` or set the EODHD_API_KEY env var
+    (free tier available at https://eodhd.com/register).
+    Bursa Malaysia tickers use the `.KLSE` suffix, e.g. "4456.KLSE" for DNEX.
+    """
+    import requests
+
+    api_key = api_key or os.environ.get("EODHD_API_KEY")
+    if not api_key:
+        raise ValueError(
+            "EODHD requires an API key: pass --api-key or set the EODHD_API_KEY "
+            "environment variable (free key at https://eodhd.com/register)."
+        )
+
+    url = f"https://eodhd.com/api/eod/{symbol}"
+    params = {"api_token": api_key, "fmt": "json", "from": start}
+    if end:
+        params["to"] = end
+
+    resp = requests.get(url, params=params, timeout=30)
+    resp.raise_for_status()
+    records = resp.json()
+    if isinstance(records, dict) and records.get("code"):
+        raise ValueError(f"EODHD error for '{symbol}': {records}")
+    if not records:
+        raise ValueError(f"No data returned for symbol '{symbol}' from EODHD")
+
+    df = pd.DataFrame(records).set_index("date")
+    return _standardize(df)
+
+
+def fetch(symbol: str, start: str, end: str | None = None, source: str = "yfinance", api_key: str | None = None) -> pd.DataFrame:
+    """Dispatch to the requested data source ('yfinance' or 'eodhd')."""
+    if source == "yfinance":
+        return fetch_ohlcv(symbol, start, end)
+    if source == "eodhd":
+        return fetch_ohlcv_eodhd(symbol, start, end, api_key)
+    raise ValueError(f"Unknown data source '{source}'. Use 'yfinance' or 'eodhd'.")
 
 
 def load_csv(path: str) -> pd.DataFrame:
