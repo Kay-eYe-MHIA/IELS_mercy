@@ -25,13 +25,22 @@
   header {
     position:sticky; top:0; z-index:10; background:var(--bg);
     padding:18px 16px 10px; border-bottom:1px solid var(--border);
+    display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
   }
   header h1 { font-size:18px; margin:0 0 2px; }
-  header p { margin:0; font-size:12px; color:var(--muted); }
+  header p { margin:0; font-size:12px; color:var(--muted); max-width:380px; }
+
+  .langswitch { display:flex; border:1px solid var(--border); border-radius:999px; padding:2px; flex-shrink:0; }
+  .langswitch button {
+    all:unset; padding:5px 11px; font-size:12px; font-weight:600; border-radius:999px; cursor:pointer; color:var(--muted);
+  }
+  .langswitch button.active { background:var(--accent); color:#fff; }
+
   main { max-width:560px; margin:0 auto; padding:16px; }
 
   .card { background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:14px; }
   .card h2 { font-size:13px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:0 0 12px; }
+  .hint { font-size:12px; color:var(--muted); margin:-6px 0 12px; line-height:1.5; }
 
   label { display:block; font-size:12px; color:var(--muted); margin:10px 0 4px; }
   label:first-child { margin-top:0; }
@@ -45,12 +54,11 @@
   details summary { cursor:pointer; font-size:13px; color:var(--accent); margin-top:12px; user-select:none; }
   details[open] summary { margin-bottom:6px; }
 
-  button {
+  button.run {
     width:100%; padding:14px; border:none; border-radius:9px; background:var(--accent);
     color:white; font-size:15px; font-weight:600; cursor:pointer; margin-top:14px;
   }
-  button:disabled { opacity:.55; }
-  button.secondary { background:var(--panel-2); color:var(--text); border:1px solid var(--border); }
+  button.run:disabled { opacity:.55; }
 
   .status { font-size:13px; color:var(--muted); margin-top:10px; text-align:center; }
   .error { background:rgba(255,93,108,.12); border:1px solid var(--red); color:var(--red); border-radius:9px; padding:12px; font-size:13px; margin-top:12px; }
@@ -75,72 +83,80 @@
 <body>
 
 <header>
-  <h1>Stock Breakout Predictor</h1>
-  <p>Walk-forward XGBoost breakout signal + ATR stop-loss, run from your phone</p>
+  <div>
+    <h1 data-i18n="title">Stock Breakout Predictor</h1>
+    <p data-i18n="subtitle">See where a stock might break out, and where to set your stop-loss — right from your phone.</p>
+  </div>
+  <div class="langswitch">
+    <button id="langEn" class="active">EN</button>
+    <button id="langMs">BM</button>
+  </div>
 </header>
 
 <main>
 
   <div class="card">
-    <h2>Backend</h2>
-    <label for="apiUrl">API URL (your Render backend)</label>
-    <input id="apiUrl" placeholder="https://your-app.onrender.com" autocomplete="off" autocapitalize="off" />
+    <h2 data-i18n="backendCard">Backend</h2>
+    <label for="apiUrl" data-i18n="apiUrlLabel">API URL (your Render backend)</label>
+    <input id="apiUrl" data-i18n-placeholder="apiUrlPlaceholder" placeholder="https://your-app.onrender.com" autocomplete="off" autocapitalize="off" />
+    <div class="hint" data-i18n="apiUrlHint">This is the link Render gave you when you deployed the backend. Paste it once — it's saved on this device.</div>
   </div>
 
   <div class="card">
-    <h2>Analysis</h2>
+    <h2 data-i18n="analysisCard">Analysis</h2>
 
-    <label for="symbol">Symbol</label>
+    <label for="symbol" data-i18n="symbolLabel">Symbol</label>
     <input id="symbol" value="AAPL" autocomplete="off" autocapitalize="off" />
+    <div class="hint" data-i18n="symbolHint">E.g. AAPL for Apple, or 4456.KL for DNEX on Bursa Malaysia.</div>
 
-    <label for="source">Data source</label>
+    <label for="source" data-i18n="sourceLabel">Data source</label>
     <select id="source">
-      <option value="synthetic">Demo (synthetic, no network needed)</option>
-      <option value="yfinance" selected>Yahoo Finance (free, .KL for Bursa)</option>
-      <option value="eodhd">EODHD (needs API key, .KLSE for Bursa)</option>
+      <option value="synthetic" data-i18n="sourceDemo">Demo (synthetic, no network needed)</option>
+      <option value="yfinance" selected data-i18n="sourceYahoo">Yahoo Finance (free, .KL for Bursa)</option>
+      <option value="eodhd" data-i18n="sourceEodhd">EODHD (needs API key, .KLSE for Bursa)</option>
     </select>
 
     <div id="apiKeyRow" class="hidden">
-      <label for="apiKey">EODHD API key</label>
+      <label for="apiKey" data-i18n="apiKeyLabel">EODHD API key</label>
       <input id="apiKey" type="password" autocomplete="off" />
     </div>
 
     <div class="row">
       <div>
-        <label for="start">Start date</label>
+        <label for="start" data-i18n="startLabel">Start date</label>
         <input id="start" type="date" value="2015-01-01" />
       </div>
       <div>
-        <label for="end">End date (optional)</label>
+        <label for="end" data-i18n="endLabel">End date (optional)</label>
         <input id="end" type="date" />
       </div>
     </div>
 
     <details>
-      <summary>Advanced settings</summary>
+      <summary data-i18n="advanced">Advanced settings</summary>
       <div class="row">
         <div>
-          <label for="horizon">Breakout horizon (days)</label>
+          <label for="horizon" data-i18n="horizonLabel">Breakout horizon (days)</label>
           <input id="horizon" type="number" value="5" min="1" max="60" />
         </div>
         <div>
-          <label for="margin">Breakout margin</label>
+          <label for="margin" data-i18n="marginLabel">Breakout margin</label>
           <input id="margin" type="number" value="0.02" step="0.01" min="0" max="1" />
         </div>
       </div>
       <div class="row">
         <div>
-          <label for="threshold">Signal probability threshold</label>
+          <label for="threshold" data-i18n="thresholdLabel">Signal probability threshold</label>
           <input id="threshold" type="number" value="0.6" step="0.05" min="0" max="1" />
         </div>
         <div>
-          <label for="splits">Walk-forward folds</label>
+          <label for="splits" data-i18n="splitsLabel">Walk-forward folds</label>
           <input id="splits" type="number" value="5" min="2" max="20" />
         </div>
       </div>
     </details>
 
-    <button id="runBtn">Run analysis</button>
+    <button id="runBtn" class="run" data-i18n="runButton">Run analysis</button>
     <div id="status" class="status hidden"></div>
     <div id="error" class="error hidden"></div>
   </div>
@@ -148,46 +164,52 @@
   <div id="results" class="hidden">
 
     <div class="card">
-      <h2>Overview</h2>
+      <h2 data-i18n="overviewTitle">Overview</h2>
       <div class="stat-grid">
-        <div class="stat"><div class="k">Symbol</div><div class="v" id="rSymbol">-</div></div>
-        <div class="stat"><div class="k">Rows used</div><div class="v" id="rRows">-</div></div>
-        <div class="stat"><div class="k">Date range</div><div class="v" id="rRange" style="font-size:13px">-</div></div>
-        <div class="stat"><div class="k">Breakout rate</div><div class="v" id="rPosRate">-</div></div>
+        <div class="stat"><div class="k" data-i18n="symbolStat">Symbol</div><div class="v" id="rSymbol">-</div></div>
+        <div class="stat"><div class="k" data-i18n="rowsStat">Rows used</div><div class="v" id="rRows">-</div></div>
+        <div class="stat"><div class="k" data-i18n="rangeStat">Date range</div><div class="v" id="rRange" style="font-size:13px">-</div></div>
+        <div class="stat"><div class="k" data-i18n="posRateStat">Breakout rate</div><div class="v" id="rPosRate">-</div></div>
       </div>
     </div>
 
     <div class="card">
-      <h2>Backtest (out-of-sample)</h2>
+      <h2 data-i18n="backtestTitle">Backtest (out-of-sample)</h2>
       <div class="stat-grid">
-        <div class="stat"><div class="k">Trades</div><div class="v" id="bTrades">-</div></div>
-        <div class="stat"><div class="k">Win rate</div><div class="v" id="bWinRate">-</div></div>
-        <div class="stat"><div class="k">Profit factor</div><div class="v" id="bProfitFactor">-</div></div>
-        <div class="stat"><div class="k">Total P&amp;L</div><div class="v" id="bPnl">-</div></div>
-        <div class="stat"><div class="k">Max drawdown</div><div class="v" id="bDrawdown">-</div></div>
-        <div class="stat"><div class="k">Avg return / trade</div><div class="v" id="bAvgReturn">-</div></div>
+        <div class="stat"><div class="k" data-i18n="tradesStat">Trades</div><div class="v" id="bTrades">-</div></div>
+        <div class="stat"><div class="k" data-i18n="winRateStat">Win rate</div><div class="v" id="bWinRate">-</div></div>
+        <div class="stat"><div class="k" data-i18n="profitFactorStat">Profit factor</div><div class="v" id="bProfitFactor">-</div></div>
+        <div class="stat"><div class="k" data-i18n="pnlStat">Total P&amp;L</div><div class="v" id="bPnl">-</div></div>
+        <div class="stat"><div class="k" data-i18n="drawdownStat">Max drawdown</div><div class="v" id="bDrawdown">-</div></div>
+        <div class="stat"><div class="k" data-i18n="avgReturnStat">Avg return / trade</div><div class="v" id="bAvgReturn">-</div></div>
       </div>
       <canvas id="equityChart"></canvas>
       <div style="font-size:11px;color:var(--muted);margin-top:6px;">
-        Exit mix: <span id="bExitMix">-</span>
+        <span data-i18n="exitMixLabel">Exit mix:</span> <span id="bExitMix">-</span>
       </div>
     </div>
 
     <div class="card">
-      <h2>Walk-forward classifier folds</h2>
+      <h2 data-i18n="foldsTitle">Walk-forward classifier folds</h2>
       <div class="tablewrap">
         <table>
-          <thead><tr><th>Fold</th><th>Acc</th><th>Prec</th><th>Recall</th><th>ROC-AUC</th><th>n</th></tr></thead>
+          <thead><tr>
+            <th data-i18n="colFold">Fold</th><th data-i18n="colAcc">Acc</th><th data-i18n="colPrec">Prec</th>
+            <th data-i18n="colRecall">Recall</th><th data-i18n="colRoc">ROC-AUC</th><th data-i18n="colN">n</th>
+          </tr></thead>
           <tbody id="foldRows"></tbody>
         </table>
       </div>
     </div>
 
     <div class="card">
-      <h2>Recent trades</h2>
+      <h2 data-i18n="tradesTitle">Recent trades</h2>
       <div class="tablewrap">
         <table>
-          <thead><tr><th>Entry</th><th>Exit</th><th>Reason</th><th>Return</th></tr></thead>
+          <thead><tr>
+            <th data-i18n="colEntry">Entry</th><th data-i18n="colExit">Exit</th>
+            <th data-i18n="colReason">Reason</th><th data-i18n="colReturn">Return</th>
+          </tr></thead>
           <tbody id="tradeRows"></tbody>
         </table>
       </div>
@@ -197,9 +219,139 @@
 
 </main>
 
-<footer>Decision-support baseline, not financial advice. Backtests do not include slippage/costs.</footer>
+<footer data-i18n="footer">Decision-support baseline, not financial advice. Backtests do not include slippage/costs.</footer>
 
 <script>
+const I18N = {
+  en: {
+    title: "Stock Breakout Predictor",
+    subtitle: "See where a stock might break out, and where to set your stop-loss — right from your phone.",
+    backendCard: "Backend",
+    apiUrlLabel: "API URL (your Render backend)",
+    apiUrlPlaceholder: "https://your-app.onrender.com",
+    apiUrlHint: "This is the link Render gave you when you deployed the backend. Paste it once — it's saved on this device.",
+    analysisCard: "Analysis",
+    symbolLabel: "Symbol",
+    symbolHint: "E.g. AAPL for Apple, or 4456.KL for DNEX on Bursa Malaysia.",
+    sourceLabel: "Data source",
+    sourceDemo: "Demo (synthetic, no network needed)",
+    sourceYahoo: "Yahoo Finance (free, .KL for Bursa)",
+    sourceEodhd: "EODHD (needs API key, .KLSE for Bursa)",
+    apiKeyLabel: "EODHD API key",
+    startLabel: "Start date",
+    endLabel: "End date (optional)",
+    advanced: "Advanced settings",
+    horizonLabel: "Breakout horizon (days)",
+    marginLabel: "Breakout margin",
+    thresholdLabel: "Signal probability threshold",
+    splitsLabel: "Walk-forward folds",
+    runButton: "Run analysis",
+    runningStatus: "Running walk-forward analysis... (first request after idle can take up to a minute on a free backend)",
+    errNoUrl: "Set your backend API URL above first (your deployed Render URL).",
+    overviewTitle: "Overview",
+    symbolStat: "Symbol",
+    rowsStat: "Rows used",
+    rangeStat: "Date range",
+    posRateStat: "Breakout rate",
+    backtestTitle: "Backtest (out-of-sample)",
+    tradesStat: "Trades",
+    winRateStat: "Win rate",
+    profitFactorStat: "Profit factor",
+    pnlStat: "Total P&L",
+    drawdownStat: "Max drawdown",
+    avgReturnStat: "Avg return / trade",
+    exitMixLabel: "Exit mix:",
+    exitStopLoss: "stop-loss",
+    exitTakeProfit: "take-profit",
+    exitTime: "time",
+    foldsTitle: "Walk-forward classifier folds",
+    colFold: "Fold", colAcc: "Acc", colPrec: "Prec", colRecall: "Recall", colRoc: "ROC-AUC", colN: "n",
+    tradesTitle: "Recent trades",
+    colEntry: "Entry", colExit: "Exit", colReason: "Reason", colReturn: "Return",
+    noTrades: "No trades triggered at this threshold.",
+    footer: "Decision-support baseline, not financial advice. Backtests do not include slippage/costs.",
+  },
+  ms: {
+    title: "Peramal Breakout Saham",
+    subtitle: "Lihat bila saham berpotensi 'breakout', dan di mana nak letak had rugi (stop-loss) — terus dari telefon anda.",
+    backendCard: "Pelayan (Backend)",
+    apiUrlLabel: "URL API (pelayan Render anda)",
+    apiUrlPlaceholder: "https://apl-anda.onrender.com",
+    apiUrlHint: "Ini pautan yang diberi oleh Render selepas anda deploy pelayan. Tampal sekali sahaja — ia disimpan pada peranti ini.",
+    analysisCard: "Analisis",
+    symbolLabel: "Simbol saham",
+    symbolHint: "Cth: AAPL untuk Apple, atau 4456.KL untuk DNEX di Bursa Malaysia.",
+    sourceLabel: "Sumber data",
+    sourceDemo: "Demo (data contoh, tiada internet diperlukan)",
+    sourceYahoo: "Yahoo Finance (percuma, guna .KL untuk Bursa)",
+    sourceEodhd: "EODHD (perlukan kunci API, guna .KLSE untuk Bursa)",
+    apiKeyLabel: "Kunci API EODHD",
+    startLabel: "Tarikh mula",
+    endLabel: "Tarikh akhir (pilihan)",
+    advanced: "Tetapan lanjutan",
+    horizonLabel: "Tempoh breakout (hari)",
+    marginLabel: "Margin breakout",
+    thresholdLabel: "Ambang kebarangkalian isyarat",
+    splitsLabel: "Bilangan lipatan walk-forward",
+    runButton: "Jalankan analisis",
+    runningStatus: "Sedang menjalankan analisis walk-forward... (permintaan pertama selepas tempoh tidak aktif boleh ambil masa sehingga seminit pada pelayan percuma)",
+    errNoUrl: "Sila masukkan URL API pelayan anda dahulu (URL Render yang telah anda deploy).",
+    overviewTitle: "Gambaran keseluruhan",
+    symbolStat: "Simbol",
+    rowsStat: "Baris data digunakan",
+    rangeStat: "Julat tarikh",
+    posRateStat: "Kadar breakout",
+    backtestTitle: "Ujian belakang (out-of-sample)",
+    tradesStat: "Dagangan",
+    winRateStat: "Kadar menang",
+    profitFactorStat: "Faktor untung",
+    pnlStat: "Jumlah untung/rugi",
+    drawdownStat: "Susutan maksimum",
+    avgReturnStat: "Purata pulangan / dagangan",
+    exitMixLabel: "Cara keluar:",
+    exitStopLoss: "had rugi",
+    exitTakeProfit: "ambil untung",
+    exitTime: "tamat tempoh",
+    foldsTitle: "Lipatan pengesahan walk-forward",
+    colFold: "Lipatan", colAcc: "Ketepatan", colPrec: "Kejituan", colRecall: "Ingatan", colRoc: "ROC-AUC", colN: "n",
+    tradesTitle: "Dagangan terkini",
+    colEntry: "Masuk", colExit: "Keluar", colReason: "Sebab", colReturn: "Pulangan",
+    noTrades: "Tiada dagangan tercetus pada ambang ini.",
+    footer: "Asas sokongan keputusan sahaja, bukan nasihat kewangan. Ujian belakang tidak termasuk kos slippage/transaksi.",
+  },
+};
+
+let lang = localStorage.getItem('spb_lang');
+if (!lang) {
+  lang = (navigator.language || '').toLowerCase().startsWith('ms') ? 'ms' : 'en';
+}
+if (!I18N[lang]) lang = 'en';
+
+function t(key) {
+  return (I18N[lang] && I18N[lang][key]) || I18N.en[key] || key;
+}
+
+function applyLanguage() {
+  document.documentElement.lang = lang === 'ms' ? 'ms' : 'en';
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.getAttribute('data-i18n'));
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
+  });
+  document.getElementById('langEn').classList.toggle('active', lang === 'en');
+  document.getElementById('langMs').classList.toggle('active', lang === 'ms');
+}
+
+function setLang(newLang) {
+  lang = newLang;
+  localStorage.setItem('spb_lang', lang);
+  applyLanguage();
+}
+
+document.getElementById('langEn').addEventListener('click', () => setLang('en'));
+document.getElementById('langMs').addEventListener('click', () => setLang('ms'));
+
 const $ = (id) => document.getElementById(id);
 
 // Persist backend URL across visits.
@@ -220,6 +372,11 @@ function fmtMoney(x) {
   if (x === null || x === undefined || Number.isNaN(x)) return '-';
   const sign = x < 0 ? '-' : '';
   return sign + '$' + Math.abs(x).toFixed(2);
+}
+function exitReasonLabel(reason) {
+  if (reason === 'stop_loss') return t('exitStopLoss');
+  if (reason === 'take_profit') return t('exitTakeProfit');
+  return t('exitTime');
 }
 
 function drawEquityCurve(trades) {
@@ -260,7 +417,7 @@ async function runAnalysis() {
   $('results').classList.add('hidden');
 
   if (!apiUrl) {
-    errBox.textContent = 'Set your backend API URL above first (your deployed Render URL).';
+    errBox.textContent = t('errNoUrl');
     errBox.classList.remove('hidden');
     return;
   }
@@ -278,7 +435,7 @@ async function runAnalysis() {
   };
 
   btn.disabled = true;
-  statusBox.textContent = 'Running walk-forward analysis... (first request after idle can take up to a minute on a free backend)';
+  statusBox.textContent = t('runningStatus');
   statusBox.classList.remove('hidden');
 
   try {
@@ -315,7 +472,7 @@ function renderResults(data) {
   $('bDrawdown').textContent = fmtMoney(b.max_drawdown);
   $('bAvgReturn').textContent = fmtPct(b.avg_return_pct);
   $('bExitMix').textContent =
-    `stop-loss ${fmtPct(b.stop_loss_exits, 0)} · take-profit ${fmtPct(b.take_profit_exits, 0)} · time ${fmtPct(b.time_exits, 0)}`;
+    `${t('exitStopLoss')} ${fmtPct(b.stop_loss_exits, 0)} · ${t('exitTakeProfit')} ${fmtPct(b.take_profit_exits, 0)} · ${t('exitTime')} ${fmtPct(b.time_exits, 0)}`;
 
   $('foldRows').innerHTML = (data.fold_metrics || []).map(f => `
     <tr>
@@ -328,13 +485,13 @@ function renderResults(data) {
     </tr>`).join('');
 
   const trades = data.trades || [];
-  $('tradeRows').innerHTML = trades.slice().reverse().map(t => `
+  $('tradeRows').innerHTML = trades.slice().reverse().map(tr => `
     <tr>
-      <td>${t.entry_date}</td>
-      <td>${t.exit_date}</td>
-      <td>${t.exit_reason.replace('_', ' ')}</td>
-      <td class="${t.return_pct >= 0 ? '' : ''}" style="color:${t.return_pct >= 0 ? 'var(--green)' : 'var(--red)'}">${fmtPct(t.return_pct)}</td>
-    </tr>`).join('') || '<tr><td colspan="4" style="color:var(--muted)">No trades triggered at this threshold.</td></tr>';
+      <td>${tr.entry_date}</td>
+      <td>${tr.exit_date}</td>
+      <td>${exitReasonLabel(tr.exit_reason)}</td>
+      <td style="color:${tr.return_pct >= 0 ? 'var(--green)' : 'var(--red)'}">${fmtPct(tr.return_pct)}</td>
+    </tr>`).join('') || `<tr><td colspan="4" style="color:var(--muted)">${t('noTrades')}</td></tr>`;
 
   $('results').classList.remove('hidden');
   drawEquityCurve(trades);
@@ -342,6 +499,7 @@ function renderResults(data) {
 }
 
 $('runBtn').addEventListener('click', runAnalysis);
+applyLanguage();
 </script>
 </body>
 </html>
